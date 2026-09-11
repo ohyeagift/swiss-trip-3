@@ -96,13 +96,16 @@ body {
 .time { width: 45px; font-size: 13px; color: var(--text-muted); font-weight: 500; padding-top: 3px; }
 .marker-icon {
     width: 24px; height: 24px;
-    background: white;
-    border: 2px solid var(--swiss-red);
+    background-color: var(--swiss-red); /* 改為紅色背景 */
+    color: white; /* 白色字體 */
+    border: 2px solid white; /* 白色邊框 */
     border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
     margin: 0 15px;
     font-size: 12px;
+    font-weight: bold;
     z-index: 2;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2); /* 加上淡淡的陰影 */
 }
 .content { flex-grow: 1; }
 .activity-name { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
