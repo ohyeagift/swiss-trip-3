@@ -72,7 +72,7 @@ const travelData = {
                     links: { website: "https://schilthorn.ch/", webcam: "https://schilthorn.ch/en/Infos/Live", weather: "https://www.meteoswiss.admin.ch/local-forecasts/schilthorn/3825.html" }
                 }
             ]
-        }
+        },
          {
             day_id: "DAY 7", date: "10/22 (四)", route_title: "伯恩 ➔ 施皮茨", accommodation: "Interlaken",
             activities: [
