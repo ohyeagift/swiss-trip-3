@@ -10,21 +10,21 @@ const travelData = {
         {
             day_id: "DAY 1", date: "10/16 (五)", route_title: "蘇黎世 ➔ 琉森", accommodation: "Luzern",
             activities: [
-                { time: "07:30", activity: "抵達蘇黎世機場", icon: "✈️", lat: 47.4582, lng: 8.5555 },
-                { time: "上午", activity: "搭乘火車 Zurich HB to Luzern", icon: "🚆", lat: 47.3781, lng: 8.5401 },
+                { time: "07:30", activity: "抵達蘇黎世機場", lat: 47.4582, lng: 8.5555 },
+                { time: "上午", activity: "搭乘火車 Zurich HB to Luzern", lat: 47.3781, lng: 8.5401 },
                 { 
-                    time: "下午", activity: "Pilatus 皮拉圖斯峰", altitude: "2,128m", icon: "⛰️", lat: 46.9795, lng: 8.2555,
-                    links: { website: "https://pilatus.ch/en", webcam: "https://pilatus.ch/en/live#c21147", weather: "https://pilatus.ch/en/live#c21149" }
+                    time: "下午", activity: "Pilatus 皮拉圖斯峰", altitude: "2,128m", lat: 46.9795, lng: 8.2555,
+                    links: { website: "https://www.pilatus.ch/", webcam: "https://www.pilatus.ch/en/discover/pilatus-live", weather: "https://www.meteoswiss.admin.ch/local-forecasts/pilatus/6010.html" }
                 },
-                { time: "傍晚", activity: "Luzern City Walk 琉森市區漫步", icon: "📸", lat: 47.0501, lng: 8.3093 }
+                { time: "傍晚", activity: "Luzern City Walk 琉森市區漫步", lat: 47.0501, lng: 8.3093 }
             ]
         },
         {
             day_id: "DAY 2", date: "10/17 (六 )", route_title: "琉森 ➔ 鐵力士峰", accommodation: "Luzern",
             activities: [
-                { time: "09:10", activity: "Luzern to Engelberg", icon: "🚆", lat: 46.8200, lng: 8.4020 },
+                { time: "09:10", activity: "Luzern to Engelberg", lat: 46.8200, lng: 8.4020 },
                 { 
-                    time: "上午", activity: "Titlis 鐵力士峰", altitude: "3,238m", icon: "⛰️", lat: 46.7720, lng: 8.4260,
+                    time: "上午", activity: "Titlis 鐵力士峰", altitude: "3,238m", lat: 46.7720, lng: 8.4260,
                     links: { website: "https://www.titlis.ch/" }
                 }
             ]
@@ -32,10 +32,10 @@ const travelData = {
         {
             day_id: "DAY 6", date: "10/21 (三 )", route_title: "因特拉肯 ➔ 雪朗峰", accommodation: "Interlaken",
             activities: [
-                { time: "上午", activity: "Lauterbrunnen 盧達本納", icon: "💧", lat: 46.5985, lng: 7.9080 },
-                { time: "中午", activity: "Mürren 米倫", altitude: "1,638m", icon: "🏘️", lat: 46.5594, lng: 7.8925 },
+                { time: "上午", activity: "Lauterbrunnen 盧達本納", lat: 46.5985, lng: 7.9080 },
+                { time: "中午", activity: "Mürren 米倫", altitude: "1,638m", lat: 46.5594, lng: 7.8925 },
                 { 
-                    time: "下午", activity: "Schilthorn 雪朗峰", altitude: "2,970m", icon: "⛰️", lat: 46.5568, lng: 7.8348,
+                    time: "下午", activity: "Schilthorn 雪朗峰", altitude: "2,970m", lat: 46.5568, lng: 7.8348,
                     links: { website: "https://schilthorn.ch/", webcam: "https://schilthorn.ch/en/Infos/Live", weather: "https://www.meteoswiss.admin.ch/local-forecasts/schilthorn/3825.html" }
                 }
             ]
@@ -103,6 +103,7 @@ async function loadDay(index) {
             if (act.links.weather) linksHtml += `<a href="${act.links.weather}" target="_blank" class="link-btn">🌤️ 天氣</a>`;
         }
 
+        // 已修改：將 act.icon 替換為 i + 1 (顯示數字)
         const itemHtml = `
             <div class="timeline-item">
                 <div class="time">${act.time}</div>
