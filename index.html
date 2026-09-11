@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CH 瑞士之旅</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- 載入 Google Maps API (包含 marker 函式庫以支援進階標記) -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDYbRZaCAmgMB3Si3R0m9B6f3kabPGvyMU&libraries=marker&callback=initMap" async defer></script>
+</head>
+<body>
+    <!-- 頂部全局資訊區 (Fixed ) -->
+    <header class="top-header">
+        <div class="trip-title">CH 瑞士之旅</div>
+        <div class="trip-dates">2026.10.15 - 10.27</div>
+        <div class="day-title" id="day-title">載入中...</div>
+    </header>
+
+    <!-- 互動地圖區 (Fixed) -->
+    <div class="map-container">
+        <div id="map"></div>
+    </div>
+
+    <!-- 橫向滑動導航列 (Sticky) -->
+    <div class="tabs-container" id="tabs-container">
+        <!-- JS 動態生成 Tabs -->
+    </div>
+
+    <!-- 每日行程時間軸 (Scrollable) -->
+    <div class="timeline-container" id="timeline-container">
+        <!-- JS 動態生成行程 -->
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
