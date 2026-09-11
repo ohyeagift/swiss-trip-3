@@ -96,14 +96,14 @@ async function loadDay(index) {
     timelineContainer.innerHTML = '';
 
     dayData.activities.forEach((act, i) => {
-        let linksHtml = `<a href="https://www.google.com/maps/dir/?api=1&destination=${act.lat},${act.lng}" target="_blank" class="link-btn">📍 導航</a>`;
+        // 已修改：將 dir (導航) 改為 search (單純顯示地圖位置)，並將文字改為「地圖」
+        let linksHtml = `<a href="https://www.google.com/maps/search/?api=1&query=${act.lat},${act.lng}" target="_blank" class="link-btn">📍 地圖</a>`;
         if (act.links ) {
             if (act.links.website) linksHtml += `<a href="${act.links.website}" target="_blank" class="link-btn">🌐 官網</a>`;
             if (act.links.webcam) linksHtml += `<a href="${act.links.webcam}" target="_blank" class="link-btn">📷 攝影機</a>`;
             if (act.links.weather) linksHtml += `<a href="${act.links.weather}" target="_blank" class="link-btn">🌤️ 天氣</a>`;
         }
 
-        // 已修改：將 act.icon 替換為 i + 1 (顯示數字)
         const itemHtml = `
             <div class="timeline-item">
                 <div class="time">${act.time}</div>
@@ -121,19 +121,23 @@ async function loadDay(index) {
     // 加入住宿卡片
     if (dayData.accommodation && travelData.accommodations[dayData.accommodation]) {
         const acc = travelData.accommodations[dayData.accommodation];
+        // 已修改：在住宿卡片中加入地圖按鈕，並微調對齊方式
         timelineContainer.innerHTML += `
-            <div class="accommodation-card">
-                <div class="acc-icon">🏠</div>
+            <div class="accommodation-card" style="align-items: flex-start;">
+                <div class="acc-icon" style="margin-top: 2px;">🏠</div>
                 <div>
                     <div class="acc-title">今晚住宿</div>
                     <div class="acc-name">${acc.name}</div>
+                    <div class="links">
+                        <a href="https://www.google.com/maps/search/?api=1&query=${acc.lat},${acc.lng}" target="_blank" class="link-btn">📍 地圖</a>
+                    </div>
                 </div>
             </div>
         `;
     }
 
     // 更新地圖標記
-    updateMapMarkers(dayData);
+    updateMapMarkers(dayData );
 }
 
 // 6. 更新地圖標記
