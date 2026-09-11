@@ -14,7 +14,7 @@ const travelData = {
                 { time: "上午", activity: "搭乘火車 Zurich HB to Luzern", icon: "🚆", lat: 47.3781, lng: 8.5401 },
                 { 
                     time: "下午", activity: "Pilatus 皮拉圖斯峰", altitude: "2,128m", icon: "⛰️", lat: 46.9795, lng: 8.2555,
-                    links: { website: "https://www.pilatus.ch/", webcam: "https://www.pilatus.ch/en/discover/pilatus-live", weather: "https://www.meteoswiss.admin.ch/local-forecasts/pilatus/6010.html" }
+                    links: { website: "https://pilatus.ch/en", webcam: "https://pilatus.ch/en/live#c21147", weather: "https://pilatus.ch/en/live#c21149" }
                 },
                 { time: "傍晚", activity: "Luzern City Walk 琉森市區漫步", icon: "📸", lat: 47.0501, lng: 8.3093 }
             ]
