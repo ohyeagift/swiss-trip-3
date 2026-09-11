@@ -29,6 +29,39 @@ const travelData = {
                 }
             ]
         },
+         {
+            day_id: "DAY 3", date: "10/18 (日)", route_title: "琉森 ➔ 因特拉肯", accommodation: "Interlaken",
+            activities: [
+                { time: "早上", activity: "Church", lat: 47.0501, lng: 8.3093 },
+                { 
+                    time: "上午", activity: "Rigi 瑞吉山 齒軌火車", altitude: "1,798m", lat: 47.0566, lng: 8.4846,
+                    links: { website: "https://www.rigi.ch/" }
+                },
+                { time: "14:00", activity: "Airbnb 拎行李", lat: 47.0485, lng: 8.3000 },
+                { time: "15:06", activity: "搭乘黃金列車前往 Interlaken West", lat: 46.6814, lng: 7.8513 },
+                { time: "傍晚", activity: "酒店 Check-in", lat: 46.6830, lng: 7.8540 }
+            ]
+        },
+        {
+            day_id: "DAY 4", date: "10/19 (一 )", route_title: "因特拉肯 ➔ 少女峰", accommodation: "Interlaken",
+            activities: [
+                { time: "上午", activity: "Eismeer (中途參觀)", altitude: "3,160m", lat: 46.5619, lng: 8.0053 },
+                { 
+                    time: "中午", activity: "Jungfraujoch 少女峰", altitude: "3,454m", lat: 46.5475, lng: 7.9826,
+                    links: { website: "https://www.jungfrau.ch/", webcam: "https://www.jungfrau.ch/en-gb/live/webcams/" }
+                },
+                { time: "下午", activity: "餐廳叫芝士火鍋 & 叫朱古力", lat: 46.6814, lng: 7.8513 }
+            ]
+        },
+        {
+            day_id: "DAY 5", date: "10/20 (二 )", route_title: "因特拉肯 ➔ First", accommodation: "Interlaken",
+            activities: [
+                { 
+                    time: "全日", activity: "First (Grindelwald First)", altitude: "2,168m", lat: 46.6606, lng: 8.0535,
+                    links: { website: "https://www.jungfrau.ch/en-gb/grindelwaldfirst/" }
+                }
+            ]
+        },
         {
             day_id: "DAY 6", date: "10/21 (三 )", route_title: "因特拉肯 ➔ 雪朗峰", accommodation: "Interlaken",
             activities: [
@@ -38,6 +71,57 @@ const travelData = {
                     time: "下午", activity: "Schilthorn 雪朗峰", altitude: "2,970m", lat: 46.5568, lng: 7.8348,
                     links: { website: "https://schilthorn.ch/", webcam: "https://schilthorn.ch/en/Infos/Live", weather: "https://www.meteoswiss.admin.ch/local-forecasts/schilthorn/3825.html" }
                 }
+            ]
+        }
+         {
+            day_id: "DAY 7", date: "10/22 (四)", route_title: "伯恩 ➔ 施皮茨", accommodation: "Interlaken",
+            activities: [
+                { time: "上午", activity: "Bern 伯恩 (首都半日遊)", lat: 46.9480, lng: 7.4474 },
+                { time: "下午", activity: "Spiez 施皮茨", lat: 46.6894, lng: 7.6800 },
+                { 
+                    time: "傍晚", activity: "Harder Kulm 哈德昆觀景台", altitude: "1,322m", lat: 46.6975, lng: 7.8647,
+                    links: { website: "https://www.jungfrau.ch/en-gb/harder-kulm/" }
+                }
+            ]
+        },
+        {
+            day_id: "DAY 8", date: "10/23 (五 )", route_title: "因特拉肯 ➔ 策馬特", accommodation: "Zermatt",
+            activities: [
+                { time: "07:00", activity: "寄2件行李去 Zurich", lat: 46.6814, lng: 7.8513 },
+                { time: "08:04", activity: "Interlaken West to Zermatt", lat: 46.0207, lng: 7.7491 },
+                { time: "下午", activity: "酒店 Check-in", lat: 46.0235, lng: 7.7490 },
+                { time: "傍晚", activity: "Zermatt City Walk", lat: 46.0190, lng: 7.7460 }
+            ]
+        },
+        {
+            day_id: "DAY 9", date: "10/24 (六)", route_title: "策馬特 ➔ 冰川天堂", accommodation: "Zermatt",
+            activities: [
+                { time: "早上", activity: "Church", lat: 46.0190, lng: 7.7460 },
+                { 
+                    time: "上午", activity: "Gornergrat 觀景台", altitude: "3,089m", lat: 45.9838, lng: 7.7854,
+                    links: { website: "https://www.gornergrat.ch/" }
+                },
+                { time: "中午", activity: "Riffelsee 利菲爾湖 (看馬特洪峰倒影 )", altitude: "2,757m", lat: 45.9822, lng: 7.7619 },
+                { 
+                    time: "下午", activity: "Matterhorn Glacier Paradise 冰川天堂", altitude: "3,883m", lat: 45.9383, lng: 7.7300,
+                    links: { website: "https://www.matterhornparadise.ch/" }
+                }
+            ]
+        },
+        {
+            day_id: "DAY 10", date: "10/25 (日 )", route_title: "策馬特 ➔ 蘇黎世", accommodation: "Zurich",
+            activities: [
+                { time: "早上", activity: "Church", lat: 46.0190, lng: 7.7460 },
+                { time: "07:28", activity: "Zermatt to Zurich", lat: 47.3781, lng: 8.5401 },
+                { time: "下午", activity: "蘇黎世 City Walk", lat: 47.3710, lng: 8.5410 }
+            ]
+        },
+        {
+            day_id: "DAY 11", date: "10/26 (一)", route_title: "蘇黎世 ➔ 香港", accommodation: "",
+            activities: [
+                { time: "早上", activity: "Zurich HB to Zurich Flughafen", lat: 47.4582, lng: 8.5555 },
+                { time: "上午", activity: "準備去機場", lat: 47.4582, lng: 8.5555 },
+                { time: "11:55", activity: "搭乘 CX382 航班返回香港", lat: 47.4582, lng: 8.5555 }
             ]
         }
         // 您可以繼續依照這個格式補齊其他天數的資料...
