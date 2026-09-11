@@ -1,10 +1,10 @@
 // 1. 行程資料 (您可以隨時在這裡新增/修改行程)
 const travelData = {
     accommodations: {
-        "Luzern": { name: "琉森 Bruchstrasse 35b", lat: 47.0485, lng: 8.3000 },
-        "Interlaken": { name: "因特拉肯 Niesenstrasse 16", lat: 46.6830, lng: 7.8540 },
-        "Zermatt": { name: "策馬特 Bachstrasse 90", lat: 46.0235, lng: 7.7490 },
-        "Zurich": { name: "蘇黎世 Löwenstrasse 34", lat: 47.3755, lng: 8.5375 }
+        "Luzern": { name: "琉森Airbnb, Bruchstrasse 35b", lat: 47.0497810810647, lng: 8.300931992893938 },
+        "Interlaken": { name: "因特拉肯Airbnb, Niesenstrasse 16", lat: 46.68289010140746, lng: 7.853981496756942 },
+        "Zermatt": { name: "策馬特 Haus Gornera, Bachstrasse 90", lat: 46.01801255700013, lng: 7.745654656757409 },
+        "Zurich": { name: "蘇黎世 Hotel City Zürich, Löwenstrasse 34", lat: 47.37502358530974, lng: 8.53643189805861 }
     },
     daily_itinerary: [
         {
