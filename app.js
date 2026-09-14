@@ -403,4 +403,53 @@ function saveActivity() {
     act.time = document.getElementById('edit-time').value;
     act.activity = document.getElementById('edit-name').value;
     act.altitude = document.getElementById('edit-content').value;
+    act.query = document.getElementById('edit-map').value;
     
+    if (!act.links) act.links = {};
+    act.links.website = document.getElementById('edit-website').value;
+    act.links.webcam = document.getElementById('edit-webcam').value;
+    act.links.weather = document.getElementById('edit-weather').value;
+    
+    if(!act.links.website) delete act.links.website;
+    if(!act.links.webcam) delete act.links.webcam;
+    if(!act.links.weather) delete act.links.weather;
+    if(Object.keys(act.links).length === 0) delete act.links;
+    
+    sortActivities(activities);
+    
+    localStorage.setItem('swissTravelData', JSON.stringify(currentData));
+    closeFormModal();
+    openListModal();
+    loadDay(currentDayIndex);
+}
+
+// 7. 匯出資料 (複製到剪貼簿)
+function exportData() {
+    const dataStr = JSON.stringify(currentData, null, 4);
+    
+    // 讀取目前的 app.js 內容並替換 travelData 區塊
+    fetch('app.js')
+        .then(response => response.text())
+        .then(text => {
+            // 尋找 const travelData = { ... }; 的範圍並替換
+            const regex = /const travelData = \{[\s\S]*?\n\};\n\n\/\/ 2\. 全局變數/;
+            const newCode = text.replace(regex, `const travelData = ${dataStr};\n\n// 2. 全局變數`);
+            
+            const tempInput = document.createElement("textarea");
+            tempInput.value = newCode;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            
+            try {
+                document.execCommand("copy");
+                alert("✅ 完整的 app.js 程式碼已複製！\n\n請到 GitHub 打開 app.js，全選並貼上即可同步給朋友。");
+            } catch (err) {
+                alert("複製失敗，請手動複製。");
+            }
+            
+            document.body.removeChild(tempInput);
+        })
+        .catch(err => {
+            alert("無法讀取原始檔案，請確認網頁環境。");
+        });
+}
