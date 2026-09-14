@@ -1,127 +1,413 @@
 // 1. 原始行程資料
 const travelData = {
-    accommodations: {
-        "Luzern": { name: "琉森 Bruchstrasse 35b", query: "Bruchstrasse 35b, Luzern", lat: 47.0485, lng: 8.3000 },
-        "Interlaken": { name: "因特拉肯 Niesenstrasse 16", query: "Niesenstrasse 16, 3800 Interlaken", lat: 46.6830, lng: 7.8540 },
-        "Zermatt": { name: "策馬特 Bachstrasse 90", query: "Bachstrasse 90, 3920 Zermatt", lat: 46.0235, lng: 7.7490 },
-        "Zurich": { name: "Hotel City Zürich", query: "Hotel City Zürich, Löwenstrasse 34", lat: 47.3755, lng: 8.5375 }
+    "accommodations": {
+        "Luzern": {
+            "name": "琉森 Bruchstrasse 35b",
+            "query": "Bruchstrasse 35b, Luzern",
+            "lat": 47.0485,
+            "lng": 8.3
+        },
+        "Interlaken": {
+            "name": "因特拉肯 Niesenstrasse 16",
+            "query": "Niesenstrasse 16, 3800 Interlaken",
+            "lat": 46.683,
+            "lng": 7.854
+        },
+        "Zermatt": {
+            "name": "策馬特 Bachstrasse 90",
+            "query": "Bachstrasse 90, 3920 Zermatt",
+            "lat": 46.0235,
+            "lng": 7.749
+        },
+        "Zurich": {
+            "name": "Hotel City Zürich",
+            "query": "Hotel City Zürich, Löwenstrasse 34",
+            "lat": 47.3755,
+            "lng": 8.5375
+        }
     },
-    daily_itinerary: [
+    "daily_itinerary": [
         {
-            day_id: "DAY 1", date: "10/16 (五)", route_title: "蘇黎世 ➔ 琉森", accommodation: "Luzern",
-            activities: [
-                { time: "07:30", activity: "抵達蘇黎世機場", query: "Zurich Airport", lat: 47.4582, lng: 8.5555 },
-                { time: "上午", activity: "搭乘火車 Zurich HB to Luzern", query: "Zurich HB", lat: 47.3781, lng: 8.5401 },
-                { 
-                    time: "下午", activity: "Pilatus 皮拉圖斯峰", altitude: "2,128m", lat: 46.9795, lng: 8.2555,
-                    links: { website: "https://www.pilatus.ch/", webcam: "https://www.pilatus.ch/en/discover/pilatus-live", weather: "https://www.meteoswiss.admin.ch/local-forecasts/pilatus/6010.html" }
+            "day_id": "DAY 1",
+            "date": "10/16 (五)",
+            "route_title": "蘇黎世 ➔ 琉森",
+            "accommodation": "Luzern",
+            "activities": [
+                {
+                    "time": "00:25",
+                    "activity": "香港國際機場 HKG",
+                    "altitude": "CX383 飛行時間: 13小時05分",
+                    "query": "香港國際機場"
                 },
-                { time: "傍晚", activity: "Luzern City Walk 琉森市區漫步", query: "Luzern", lat: 47.0501, lng: 8.3093 }
-            ]
-        },
-        {
-            day_id: "DAY 2", date: "10/17 (六 )", route_title: "琉森 ➔ 鐵力士峰", accommodation: "Luzern",
-            activities: [
-                { time: "09:10", activity: "Luzern to Engelberg", query: "Luzern Bahnhof", lat: 46.8200, lng: 8.4020 },
-                { 
-                    time: "上午", activity: "Titlis 鐵力士峰", altitude: "3,238m", lat: 46.7720, lng: 8.4260,
-                    links: { website: "https://www.titlis.ch/" }
-                }
-            ]
-        },
-        {
-            day_id: "DAY 3", date: "10/18 (日 )", route_title: "琉森 ➔ 因特拉肯", accommodation: "Interlaken",
-            activities: [
-                { time: "早上", activity: "Church", query: "Church, Luzern", lat: 47.0501, lng: 8.3093 },
-                { 
-                    time: "上午", activity: "Rigi 瑞吉山 齒軌火車", altitude: "1,798m", lat: 47.0566, lng: 8.4846,
-                    links: { website: "https://www.rigi.ch/" }
+                {
+                    "time": "07:30",
+                    "activity": "蘇黎世機場 ZRH",
+                    "query": "Zurich Airport",
+                    "lat": 47.4582,
+                    "lng": 8.5555,
+                    "altitude": "乘搭火車 Zürich Flughafen to Luzern 1hr10mins"
                 },
-                { time: "14:00", activity: "Airbnb 拎行李", query: "Bruchstrasse 35b, Luzern", lat: 47.0485, lng: 8.3000 },
-                { time: "15:06", activity: "搭乘黃金列車前往 Interlaken West", query: "Interlaken West", lat: 46.6814, lng: 7.8513 },
-                { time: "傍晚", activity: "酒店 Check-in", query: "Niesenstrasse 16, 3800 Interlaken", lat: 46.6830, lng: 7.8540 }
-            ]
-        },
-        {
-            day_id: "DAY 4", date: "10/19 (一 )", route_title: "因特拉肯 ➔ 少女峰", accommodation: "Interlaken",
-            activities: [
-                { time: "上午", activity: "Eismeer (中途參觀)", altitude: "3,160m", lat: 46.5619, lng: 8.0053 },
-                { 
-                    time: "中午", activity: "Jungfraujoch 少女峰", altitude: "3,454m", lat: 46.5475, lng: 7.9826,
-                    links: { website: "https://www.jungfrau.ch/", webcam: "https://www.jungfrau.ch/en-gb/live/webcams/" }
+                {
+                    "time": "08:15-09:25",
+                    "activity": "琉森火車站 Luzern",
+                    "altitude": "",
+                    "query": "琉森火車站"
                 },
-                { time: "下午", activity: "餐廳叫芝士火鍋 & 叫朱古力", query: "Interlaken", lat: 46.6814, lng: 7.8513 }
-            ]
-        },
-        {
-            day_id: "DAY 5", date: "10/20 (二 )", route_title: "因特拉肯 ➔ First", accommodation: "Interlaken",
-            activities: [
-                { 
-                    time: "全日", activity: "First (Grindelwald First)", altitude: "2,168m", lat: 46.6606, lng: 8.0535,
-                    links: { website: "https://www.jungfrau.ch/en-gb/grindelwaldfirst/" }
-                }
-            ]
-        },
-        {
-            day_id: "DAY 6", date: "10/21 (三 )", route_title: "因特拉肯 ➔ 雪朗峰", accommodation: "Interlaken",
-            activities: [
-                { time: "上午", activity: "Lauterbrunnen 盧達本納", lat: 46.5985, lng: 7.9080 },
-                { time: "中午", activity: "Mürren 米倫", altitude: "1,638m", lat: 46.5594, lng: 7.8925 },
-                { 
-                    time: "下午", activity: "Schilthorn 雪朗峰", altitude: "2,970m", lat: 46.5568, lng: 7.8348,
-                    links: { website: "https://schilthorn.ch/", webcam: "https://schilthorn.ch/en/Infos/Live", weather: "https://www.meteoswiss.admin.ch/local-forecasts/schilthorn/3825.html" }
-                }
-            ]
-        },
-        {
-            day_id: "DAY 7", date: "10/22 (四 )", route_title: "伯恩 ➔ 施皮茨", accommodation: "Interlaken",
-            activities: [
-                { time: "上午", activity: "Bern 伯恩 (首都半日遊)", query: "Bern", lat: 46.9480, lng: 7.4474 },
-                { time: "下午", activity: "Spiez 施皮茨", query: "Spiez", lat: 46.6894, lng: 7.6800 },
-                { 
-                    time: "傍晚", activity: "Harder Kulm 哈德昆觀景台", altitude: "1,322m", lat: 46.6975, lng: 7.8647,
-                    links: { website: "https://www.jungfrau.ch/en-gb/harder-kulm/" }
-                }
-            ]
-        },
-        {
-            day_id: "DAY 8", date: "10/23 (五 )", route_title: "因特拉肯 ➔ 策馬特", accommodation: "Zermatt",
-            activities: [
-                { time: "07:00", activity: "寄2件行李去 Zurich", query: "Interlaken West", lat: 46.6814, lng: 7.8513 },
-                { time: "08:04", activity: "Interlaken West to Zermatt", query: "Zermatt Bahnhof", lat: 46.0207, lng: 7.7491 },
-                { time: "下午", activity: "酒店 Check-in", query: "Bachstrasse 90, 3920 Zermatt", lat: 46.0235, lng: 7.7490 },
-                { time: "傍晚", activity: "Zermatt City Walk", query: "Zermatt", lat: 46.0190, lng: 7.7460 }
-            ]
-        },
-        {
-            day_id: "DAY 9", date: "10/24 (六)", route_title: "策馬特 ➔ 冰川天堂", accommodation: "Zermatt",
-            activities: [
-                { time: "早上", activity: "Church", query: "Church, Zermatt", lat: 46.0190, lng: 7.7460 },
-                { 
-                    time: "上午", activity: "Gornergrat 觀景台", altitude: "3,089m", lat: 45.9838, lng: 7.7854,
-                    links: { website: "https://www.gornergrat.ch/" }
+                {
+                    "time": "9:45",
+                    "activity": "琉森巴士站",
+                    "altitude": "",
+                    "query": "Torbogen Luzern"
                 },
-                { time: "中午", activity: "Riffelsee 利菲爾湖 (看馬特洪峰倒影 )", altitude: "2,757m", lat: 45.9822, lng: 7.7619 },
-                { 
-                    time: "下午", activity: "Matterhorn Glacier Paradise 冰川天堂", altitude: "3,883m", lat: 45.9383, lng: 7.7300,
-                    links: { website: "https://www.matterhornparadise.ch/" }
+                {
+                    "time": "10:00-10:30",
+                    "activity": "琉森Airbnb",
+                    "altitude": "放低行李",
+                    "query": "Bruchstrasse 35b"
+                },
+                {
+                    "time": "下午",
+                    "activity": "Pilatus 皮拉圖斯峰 (2,128m)",
+                    "altitude": "成人來回 CHF 42 (STP)",
+                    "lat": 46.9795,
+                    "lng": 8.2555,
+                    "links": {
+                        "website": "https://pilatus.ch/en/map",
+                        "webcam": "https://pilatus.ch/en/live#c21147",
+                        "weather": "https://pilatus.ch/en/live#c21149"
+                    },
+                    "query": "Kriens 纜車終點站"
+                },
+                {
+                    "time": "傍晚",
+                    "activity": "Luzern City Walk 琉森市區漫步",
+                    "query": "Luzern",
+                    "lat": 47.0501,
+                    "lng": 8.3093
                 }
             ]
         },
         {
-            day_id: "DAY 10", date: "10/25 (日 )", route_title: "策馬特 ➔ 蘇黎世", accommodation: "Zurich",
-            activities: [
-                { time: "早上", activity: "Church", query: "Church, Zurich", lat: 46.0190, lng: 7.7460 },
-                { time: "07:28", activity: "Zermatt to Zurich", query: "Zurich HB", lat: 47.3781, lng: 8.5401 },
-                { time: "下午", activity: "蘇黎世 City Walk", query: "Zurich", lat: 47.3710, lng: 8.5410 }
+            "day_id": "DAY 2",
+            "date": "10/17 (六 )",
+            "route_title": "琉森 ➔ 鐵力士峰",
+            "accommodation": "Luzern",
+            "activities": [
+                {
+                    "time": "09:10",
+                    "activity": "Luzern to Engelberg",
+                    "query": "Luzern Bahnhof",
+                    "lat": 46.82,
+                    "lng": 8.402
+                },
+                {
+                    "time": "上午",
+                    "activity": "Titlis 鐵力士峰",
+                    "altitude": "3,238m",
+                    "lat": 46.772,
+                    "lng": 8.426,
+                    "links": {
+                        "website": "https://www.titlis.ch/"
+                    }
+                }
             ]
         },
         {
-            day_id: "DAY 11", date: "10/26 (一)", route_title: "蘇黎世 ➔ 香港", accommodation: "",
-            activities: [
-                { time: "早上", activity: "Zurich HB to Zurich Flughafen", query: "Zurich Airport", lat: 47.4582, lng: 8.5555 },
-                { time: "上午", activity: "準備去機場", query: "Zurich Airport", lat: 47.4582, lng: 8.5555 },
-                { time: "11:55", activity: "搭乘 CX382 航班返回香港", query: "Zurich Airport", lat: 47.4582, lng: 8.5555 }
+            "day_id": "DAY 3",
+            "date": "10/18 (日 )",
+            "route_title": "琉森 ➔ 因特拉肯",
+            "accommodation": "Interlaken",
+            "activities": [
+                {
+                    "time": "早上",
+                    "activity": "Church",
+                    "query": "Church, Luzern",
+                    "lat": 47.0501,
+                    "lng": 8.3093
+                },
+                {
+                    "time": "上午",
+                    "activity": "Rigi 瑞吉山 齒軌火車",
+                    "altitude": "1,798m",
+                    "lat": 47.0566,
+                    "lng": 8.4846,
+                    "links": {
+                        "website": "https://www.rigi.ch/"
+                    }
+                },
+                {
+                    "time": "14:00",
+                    "activity": "Airbnb 拎行李",
+                    "query": "Bruchstrasse 35b, Luzern",
+                    "lat": 47.0485,
+                    "lng": 8.3
+                },
+                {
+                    "time": "15:06",
+                    "activity": "搭乘黃金列車前往 Interlaken West",
+                    "query": "Interlaken West",
+                    "lat": 46.6814,
+                    "lng": 7.8513
+                },
+                {
+                    "time": "傍晚",
+                    "activity": "酒店 Check-in",
+                    "query": "Niesenstrasse 16, 3800 Interlaken",
+                    "lat": 46.683,
+                    "lng": 7.854
+                }
+            ]
+        },
+        {
+            "day_id": "DAY 4",
+            "date": "10/19 (一 )",
+            "route_title": "因特拉肯 ➔ 少女峰",
+            "accommodation": "Interlaken",
+            "activities": [
+                {
+                    "time": "上午",
+                    "activity": "Eismeer (中途參觀)",
+                    "altitude": "3,160m",
+                    "lat": 46.5619,
+                    "lng": 8.0053
+                },
+                {
+                    "time": "中午",
+                    "activity": "Jungfraujoch 少女峰",
+                    "altitude": "3,454m",
+                    "lat": 46.5475,
+                    "lng": 7.9826,
+                    "links": {
+                        "website": "https://www.jungfrau.ch/",
+                        "webcam": "https://www.jungfrau.ch/en-gb/live/webcams/"
+                    }
+                },
+                {
+                    "time": "下午",
+                    "activity": "餐廳叫芝士火鍋 & 叫朱古力",
+                    "query": "Interlaken",
+                    "lat": 46.6814,
+                    "lng": 7.8513
+                }
+            ]
+        },
+        {
+            "day_id": "DAY 5",
+            "date": "10/20 (二 )",
+            "route_title": "因特拉肯 ➔ First",
+            "accommodation": "Interlaken",
+            "activities": [
+                {
+                    "time": "全日",
+                    "activity": "First (Grindelwald First)",
+                    "altitude": "2,168m",
+                    "lat": 46.6606,
+                    "lng": 8.0535,
+                    "links": {
+                        "website": "https://www.jungfrau.ch/en-gb/grindelwaldfirst/"
+                    }
+                }
+            ]
+        },
+        {
+            "day_id": "DAY 6",
+            "date": "10/21 (三 )",
+            "route_title": "因特拉肯 ➔ 雪朗峰",
+            "accommodation": "Interlaken",
+            "activities": [
+                {
+                    "time": "上午",
+                    "activity": "Lauterbrunnen 盧達本納",
+                    "lat": 46.5985,
+                    "lng": 7.908
+                },
+                {
+                    "time": "中午",
+                    "activity": "Mürren 米倫",
+                    "altitude": "1,638m",
+                    "lat": 46.5594,
+                    "lng": 7.8925
+                },
+                {
+                    "time": "下午",
+                    "activity": "Schilthorn 雪朗峰",
+                    "altitude": "2,970m",
+                    "lat": 46.5568,
+                    "lng": 7.8348,
+                    "links": {
+                        "website": "https://schilthorn.ch/",
+                        "webcam": "https://schilthorn.ch/en/Infos/Live",
+                        "weather": "https://www.meteoswiss.admin.ch/local-forecasts/schilthorn/3825.html"
+                    }
+                }
+            ]
+        },
+        {
+            "day_id": "DAY 7",
+            "date": "10/22 (四 )",
+            "route_title": "伯恩 ➔ 施皮茨",
+            "accommodation": "Interlaken",
+            "activities": [
+                {
+                    "time": "上午",
+                    "activity": "Bern 伯恩 (首都半日遊)",
+                    "query": "Bern",
+                    "lat": 46.948,
+                    "lng": 7.4474
+                },
+                {
+                    "time": "下午",
+                    "activity": "Spiez 施皮茨",
+                    "query": "Spiez",
+                    "lat": 46.6894,
+                    "lng": 7.68
+                },
+                {
+                    "time": "傍晚",
+                    "activity": "Harder Kulm 哈德昆觀景台",
+                    "altitude": "1,322m",
+                    "lat": 46.6975,
+                    "lng": 7.8647,
+                    "links": {
+                        "website": "https://www.jungfrau.ch/en-gb/harder-kulm/"
+                    }
+                }
+            ]
+        },
+        {
+            "day_id": "DAY 8",
+            "date": "10/23 (五 )",
+            "route_title": "因特拉肯 ➔ 策馬特",
+            "accommodation": "Zermatt",
+            "activities": [
+                {
+                    "time": "07:00",
+                    "activity": "寄2件行李去 Zurich",
+                    "query": "Interlaken West",
+                    "lat": 46.6814,
+                    "lng": 7.8513
+                },
+                {
+                    "time": "08:04",
+                    "activity": "Interlaken West to Zermatt",
+                    "query": "Zermatt Bahnhof",
+                    "lat": 46.0207,
+                    "lng": 7.7491
+                },
+                {
+                    "time": "下午",
+                    "activity": "酒店 Check-in",
+                    "query": "Bachstrasse 90, 3920 Zermatt",
+                    "lat": 46.0235,
+                    "lng": 7.749
+                },
+                {
+                    "time": "傍晚",
+                    "activity": "Zermatt City Walk",
+                    "query": "Zermatt",
+                    "lat": 46.019,
+                    "lng": 7.746
+                }
+            ]
+        },
+        {
+            "day_id": "DAY 9",
+            "date": "10/24 (六)",
+            "route_title": "策馬特 ➔ 冰川天堂",
+            "accommodation": "Zermatt",
+            "activities": [
+                {
+                    "time": "早上",
+                    "activity": "Church",
+                    "query": "Church, Zermatt",
+                    "lat": 46.019,
+                    "lng": 7.746
+                },
+                {
+                    "time": "上午",
+                    "activity": "Gornergrat 觀景台",
+                    "altitude": "3,089m",
+                    "lat": 45.9838,
+                    "lng": 7.7854,
+                    "links": {
+                        "website": "https://www.gornergrat.ch/"
+                    }
+                },
+                {
+                    "time": "中午",
+                    "activity": "Riffelsee 利菲爾湖 (看馬特洪峰倒影 )",
+                    "altitude": "2,757m",
+                    "lat": 45.9822,
+                    "lng": 7.7619
+                },
+                {
+                    "time": "下午",
+                    "activity": "Matterhorn Glacier Paradise 冰川天堂",
+                    "altitude": "3,883m",
+                    "lat": 45.9383,
+                    "lng": 7.73,
+                    "links": {
+                        "website": "https://www.matterhornparadise.ch/"
+                    }
+                }
+            ]
+        },
+        {
+            "day_id": "DAY 10",
+            "date": "10/25 (日 )",
+            "route_title": "策馬特 ➔ 蘇黎世",
+            "accommodation": "Zurich",
+            "activities": [
+                {
+                    "time": "早上",
+                    "activity": "Church",
+                    "query": "Church, Zurich",
+                    "lat": 46.019,
+                    "lng": 7.746
+                },
+                {
+                    "time": "07:28",
+                    "activity": "Zermatt to Zurich",
+                    "query": "Zurich HB",
+                    "lat": 47.3781,
+                    "lng": 8.5401
+                },
+                {
+                    "time": "下午",
+                    "activity": "蘇黎世 City Walk",
+                    "query": "Zurich",
+                    "lat": 47.371,
+                    "lng": 8.541
+                }
+            ]
+        },
+        {
+            "day_id": "DAY 11",
+            "date": "10/26 (一)",
+            "route_title": "蘇黎世 ➔ 香港",
+            "accommodation": "",
+            "activities": [
+                {
+                    "time": "早上",
+                    "activity": "Zurich HB to Zurich Flughafen",
+                    "query": "Zurich Airport",
+                    "lat": 47.4582,
+                    "lng": 8.5555
+                },
+                {
+                    "time": "上午",
+                    "activity": "準備去機場",
+                    "query": "Zurich Airport",
+                    "lat": 47.4582,
+                    "lng": 8.5555
+                },
+                {
+                    "time": "11:55",
+                    "activity": "搭乘 CX382 航班返回香港",
+                    "query": "Zurich Airport",
+                    "lat": 47.4582,
+                    "lng": 8.5555
+                }
             ]
         }
     ]
