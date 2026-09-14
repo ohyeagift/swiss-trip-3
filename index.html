@@ -15,7 +15,7 @@
                 <div class="trip-title">瑞士之旅</div>
                 <div class="trip-dates">2026.10.16 - 10.27</div>
             </div>
-            <button class="edit-day-btn" onclick="checkPasswordAndOpen()">編輯行程</button>
+            <button class="edit-day-btn" onclick="checkPasswordAndOpen( )">編輯行程</button>
         </div>
         <div class="day-title" id="day-title">載入中...</div>
     </header>
@@ -73,12 +73,22 @@
                     <input type="text" id="edit-name" placeholder="例如: Pilatus 皮拉圖斯峰">
                 </div>
                 <div class="form-group">
-                    <label>內容 (如: 海拔/備註)</label>
-                    <input type="text" id="edit-content" placeholder="例如: 海拔 2,128m">
+                    <label>內容 (如: 海拔/備註 - 可按 Enter 換行)</label>
+                    <textarea id="edit-content" rows="3" placeholder="例如: 海拔 2,128m&#10;放低行李"></textarea>
                 </div>
                 <div class="form-group">
-                    <label>地圖 (搜尋關鍵字)</label>
+                    <label>地圖 (搜尋關鍵字 - 用於按鈕連結)</label>
                     <input type="text" id="edit-map" placeholder="例如: Pilatus">
+                </div>
+                <div class="form-group" style="display: flex; gap: 10px;">
+                    <div style="flex: 1;">
+                        <label>緯度 Lat (選填 - 用於地圖標記)</label>
+                        <input type="number" id="edit-lat" step="any" placeholder="如: 47.0501">
+                    </div>
+                    <div style="flex: 1;">
+                        <label>經度 Lng (選填 - 用於地圖標記)</label>
+                        <input type="number" id="edit-lng" step="any" placeholder="如: 8.3093">
+                    </div>
                 </div>
                 <div class="form-group">
                     <label>官網連結</label>
