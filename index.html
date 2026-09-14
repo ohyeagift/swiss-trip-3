@@ -15,7 +15,7 @@
                 <div class="trip-title">瑞士之旅</div>
                 <div class="trip-dates">2026.10.16 - 10.27</div>
             </div>
-            <button class="edit-day-btn" onclick="openListModal( )">編輯行程</button>
+            <button class="edit-day-btn" onclick="checkPasswordAndOpen()">編輯行程</button>
         </div>
         <div class="day-title" id="day-title">載入中...</div>
     </header>
@@ -49,6 +49,8 @@
                 <button class="btn-secondary add-btn" onclick="openNewFormModal()">+ 新增行程</button>
             </div>
             <div class="modal-footer">
+                            <div class="modal-footer double-btn">
+                <button class="btn-secondary" onclick="exportData()">匯出資料</button>
                 <button class="btn-primary" onclick="closeListModal()">完成</button>
             </div>
         </div>
