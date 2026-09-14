@@ -128,7 +128,6 @@ const travelData = {
 };
 
 // 2. 全局變數與資料初始化
-// 嘗試從瀏覽器暫存讀取資料，如果沒有就用原本的 travelData
 let currentData = JSON.parse(localStorage.getItem('swissTravelData')) || travelData;
 let map;
 let markers = [];
@@ -174,10 +173,8 @@ async function loadDay(index) {
     currentDayIndex = index;
     const dayData = currentData.daily_itinerary[index];
     
-    // 更新頂部標題
     document.getElementById('day-title').innerText = `${dayData.day_id} · ${dayData.date} | ${dayData.route_title}`;
 
-    // 更新時間軸
     const timelineContainer = document.getElementById('timeline-container');
     timelineContainer.innerHTML = '';
 
@@ -205,7 +202,6 @@ async function loadDay(index) {
         timelineContainer.innerHTML += itemHtml;
     });
 
-    // 加入住宿卡片
     if (dayData.accommodation && currentData.accommodations[dayData.accommodation]) {
         const acc = currentData.accommodations[dayData.accommodation];
         const accSearchQuery = encodeURIComponent(acc.query || acc.name);
@@ -224,7 +220,6 @@ async function loadDay(index) {
         `;
     }
 
-    // 更新地圖標記
     updateMapMarkers(dayData );
 }
 
@@ -275,3 +270,83 @@ async function updateMapMarkers(dayData) {
         const listener = google.maps.event.addListener(map, "idle", function() { 
             if (map.getZoom() > 14) map.setZoom(14); 
             google.maps.event.removeListener(listener); 
+        });
+    }
+}
+
+// ================= 編輯功能邏輯 =================
+
+// 1. 打開該日的行程列表
+function openListModal() {
+    const dayData = currentData.daily_itinerary[currentDayIndex];
+    document.getElementById('modal-day-title').innerText = `編輯 ${dayData.day_id} 行程`;
+    
+    const container = document.getElementById('edit-list-container');
+    container.innerHTML = '';
+    
+    dayData.activities.forEach((act, i) => {
+        container.innerHTML += `
+            <div class="edit-list-item">
+                <div class="edit-list-info">
+                    <div class="t">${act.time}</div>
+                    <div class="n">${act.activity}</div>
+                </div>
+                <div class="edit-list-actions">
+                    <button onclick="openFormModal(${i})">編輯</button>
+                </div>
+            </div>
+        `;
+    });
+    
+    document.getElementById('list-modal').classList.add('active');
+}
+
+function closeListModal() {
+    document.getElementById('list-modal').classList.remove('active');
+}
+
+// 2. 打開單一活動編輯表單
+function openFormModal(activityIndex) {
+    editingActivityIndex = activityIndex;
+    const act = currentData.daily_itinerary[currentDayIndex].activities[activityIndex];
+    
+    document.getElementById('edit-time').value = act.time || '';
+    document.getElementById('edit-name').value = act.activity || '';
+    document.getElementById('edit-content').value = act.altitude || '';
+    document.getElementById('edit-map').value = act.query || act.activity || '';
+    
+    document.getElementById('edit-website').value = (act.links && act.links.website) ? act.links.website : '';
+    document.getElementById('edit-webcam').value = (act.links && act.links.webcam) ? act.links.webcam : '';
+    document.getElementById('edit-weather').value = (act.links && act.links.weather) ? act.links.weather : '';
+    
+    document.getElementById('form-modal').classList.add('active');
+}
+
+function closeFormModal() {
+    document.getElementById('form-modal').classList.remove('active');
+}
+
+// 3. 儲存編輯內容
+function saveActivity() {
+    const act = currentData.daily_itinerary[currentDayIndex].activities[editingActivityIndex];
+    
+    act.time = document.getElementById('edit-time').value;
+    act.activity = document.getElementById('edit-name').value;
+    act.altitude = document.getElementById('edit-content').value;
+    act.query = document.getElementById('edit-map').value;
+    
+    if (!act.links) act.links = {};
+    act.links.website = document.getElementById('edit-website').value;
+    act.links.webcam = document.getElementById('edit-webcam').value;
+    act.links.weather = document.getElementById('edit-weather').value;
+    
+    if(!act.links.website) delete act.links.website;
+    if(!act.links.webcam) delete act.links.webcam;
+    if(!act.links.weather) delete act.links.weather;
+    
+    localStorage.setItem('swissTravelData', JSON.stringify(currentData));
+    
+    closeFormModal();
+    openListModal();
+    loadDay(currentDayIndex);
+}
