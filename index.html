@@ -33,7 +33,7 @@
 
     <!-- ================= 彈出視窗區 ================= -->
     
-    <!-- 1. 編輯行程列表 Modal (圖2) -->
+    <!-- 1. 編輯行程列表 Modal -->
     <div id="list-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -41,8 +41,12 @@
                 <h3 id="modal-day-title">編輯行程</h3>
                 <div style="width: 24px;"></div>
             </div>
-            <div class="modal-body" id="edit-list-container">
-                <!-- JS 動態生成列表 -->
+            <div class="modal-body">
+                <div class="sort-hint">新增行程會依時間自動排序</div>
+                <div id="edit-list-container">
+                    <!-- JS 動態生成列表 -->
+                </div>
+                <button class="btn-secondary add-btn" onclick="openNewFormModal()">+ 新增行程</button>
             </div>
             <div class="modal-footer">
                 <button class="btn-primary" onclick="closeListModal()">完成</button>
@@ -50,7 +54,7 @@
         </div>
     </div>
 
-    <!-- 2. 編輯單一活動 Modal (圖3/圖4) -->
+    <!-- 2. 編輯單一活動 Modal -->
     <div id="form-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
