@@ -1,10 +1,10 @@
 // 1. 行程資料 (您可以隨時在這裡新增/修改行程)
 const travelData = {
     accommodations: {
-        "Luzern": { name: "琉森Airbnb, Bruchstrasse 35b", query: "Bruchstrasse 35b, Luzern", lat: 47.0485, lng: 8.3000 },
-        "Interlaken": { name: "因特拉肯Airbnb, Niesenstrasse 16", query: "Niesenstrasse 16, 3800 Interlaken", lat: 46.6830, lng: 7.8540 },
-        "Zermatt": { name: "策馬特 Haus Gornera, Bachstrasse 90", query: "Haus Gornera, Bachstrasse 90, 3920 Zermatt", lat: 46.0235, lng: 7.7490 },
-        "Zurich": { name: "蘇黎世 Hotel City Zürich", query: "Hotel City Zürich, Löwenstrasse 34", lat: 47.3755, lng: 8.5375 }
+        "Luzern": { name: "琉森 Bruchstrasse 35b", query: "Bruchstrasse 35b, Luzern", lat: 47.0485, lng: 8.3000 },
+        "Interlaken": { name: "因特拉肯 Niesenstrasse 16", query: "Niesenstrasse 16, 3800 Interlaken", lat: 46.6830, lng: 7.8540 },
+        "Zermatt": { name: "策馬特 Bachstrasse 90", query: "Bachstrasse 90, 3920 Zermatt", lat: 46.0235, lng: 7.7490 },
+        "Zurich": { name: "Hotel City Zürich", query: "Hotel City Zürich, Löwenstrasse 34", lat: 47.3755, lng: 8.5375 }
     },
     daily_itinerary: [
         {
@@ -281,4 +281,97 @@ async function updateMapMarkers(dayData) {
             google.maps.event.removeListener(listener); 
         });
     }
+}
+// ================= 編輯功能邏輯 =================
+
+// 嘗試從瀏覽器暫存讀取資料，如果沒有就用原本的 travelData
+let currentData = JSON.parse(localStorage.getItem('swissTravelData')) || travelData;
+let editingActivityIndex = null;
+
+// 覆寫原本的 loadDay，讓它讀取 currentData
+const originalLoadDay = loadDay;
+loadDay = async function(index) {
+    travelData.daily_itinerary = currentData.daily_itinerary; // 同步資料
+    await originalLoadDay(index);
+};
+
+// 1. 打開該日的行程列表 (圖2)
+function openListModal() {
+    const dayData = currentData.daily_itinerary[currentDayIndex];
+    document.getElementById('modal-day-title').innerText = `編輯 ${dayData.day_id} 行程`;
+    
+    const container = document.getElementById('edit-list-container');
+    container.innerHTML = '';
+    
+    dayData.activities.forEach((act, i) => {
+        container.innerHTML += `
+            <div class="edit-list-item">
+                <div class="edit-list-info">
+                    <div class="t">${act.time}</div>
+                    <div class="n">${act.activity}</div>
+                </div>
+                <div class="edit-list-actions">
+                    <button onclick="openFormModal(${i})">編輯</button>
+                </div>
+            </div>
+        `;
+    });
+    
+    document.getElementById('list-modal').classList.add('active');
+}
+
+function closeListModal() {
+    document.getElementById('list-modal').classList.remove('active');
+}
+
+// 2. 打開單一活動編輯表單 (圖3/4)
+function openFormModal(activityIndex) {
+    editingActivityIndex = activityIndex;
+    const act = currentData.daily_itinerary[currentDayIndex].activities[activityIndex];
+    
+    // 填入現有資料
+    document.getElementById('edit-time').value = act.time || '';
+    document.getElementById('edit-name').value = act.activity || '';
+    document.getElementById('edit-content').value = act.altitude || '';
+    document.getElementById('edit-map').value = act.query || act.activity || '';
+    
+    document.getElementById('edit-website').value = (act.links && act.links.website) ? act.links.website : '';
+    document.getElementById('edit-webcam').value = (act.links && act.links.webcam) ? act.links.webcam : '';
+    document.getElementById('edit-weather').value = (act.links && act.links.weather) ? act.links.weather : '';
+    
+    document.getElementById('form-modal').classList.add('active');
+}
+
+function closeFormModal() {
+    document.getElementById('form-modal').classList.remove('active');
+}
+
+// 3. 儲存編輯內容
+function saveActivity() {
+    const act = currentData.daily_itinerary[currentDayIndex].activities[editingActivityIndex];
+    
+    // 讀取輸入框的值
+    act.time = document.getElementById('edit-time').value;
+    act.activity = document.getElementById('edit-name').value;
+    act.altitude = document.getElementById('edit-content').value;
+    act.query = document.getElementById('edit-map').value;
+    
+    // 處理連結
+    if (!act.links) act.links = {};
+    act.links.website = document.getElementById('edit-website').value;
+    act.links.webcam = document.getElementById('edit-webcam').value;
+    act.links.weather = document.getElementById('edit-weather').value;
+    
+    // 清除空的連結屬性
+    if(!act.links.website) delete act.links.website;
+    if(!act.links.webcam) delete act.links.webcam;
+    if(!act.links.weather) delete act.links.weather;
+    
+    // 儲存到瀏覽器暫存
+    localStorage.setItem('swissTravelData', JSON.stringify(currentData));
+    
+    // 關閉表單並重新整理畫面
+    closeFormModal();
+    openListModal(); // 刷新列表
+    loadDay(currentDayIndex); // 刷新背景的主畫面
 }
