@@ -467,12 +467,20 @@ async function loadDay(index) {
 
     dayData.activities.forEach((act, i) => {
         const searchQuery = encodeURIComponent(act.query || act.activity);
-        let linksHtml = `<a href="https://www.google.com/maps/search/?api=1&query=${searchQuery}" target="_blank" class="link-btn">📍 地圖</a>`;
+        let linksHtml = '';
         
-        if (act.links  ) {
+        // 1. 如果有輸入 query 才顯示地圖按鈕
+        if (act.query && act.query.trim() !== '') {
+            const searchQuery = encodeURIComponent(act.query);
+            linksHtml += `<a href="https://www.google.com/maps/search/?api=1&query=${searchQuery}" target="_blank" class="link-btn">📍 地圖</a>`;
+        }
+        
+        // 2. 顯示其他按鈕
+        if (act.links ) {
             if (act.links.website) linksHtml += `<a href="${act.links.website}" target="_blank" class="link-btn">🌐 官網</a>`;
             if (act.links.webcam) linksHtml += `<a href="${act.links.webcam}" target="_blank" class="link-btn">📷 攝影機</a>`;
             if (act.links.weather) linksHtml += `<a href="${act.links.weather}" target="_blank" class="link-btn">🌤️ 天氣</a>`;
+            if (act.links.other) linksHtml += `<a href="${act.links.other}" target="_blank" class="link-btn">🔗 其他</a>`;
         }
 
 const itemHtml = `
@@ -630,6 +638,7 @@ function openNewFormModal() {
     document.getElementById('edit-website').value = '';
     document.getElementById('edit-webcam').value = '';
     document.getElementById('edit-weather').value = '';
+    document.getElementById('edit-other').value = '';
     document.getElementById('form-modal').classList.add('active');
 }
 
@@ -640,7 +649,7 @@ function openFormModal(activityIndex) {
     document.getElementById('edit-time').value = act.time || '';
     document.getElementById('edit-name').value = act.activity || '';
     document.getElementById('edit-content').value = act.altitude || '';
-    document.getElementById('edit-map').value = act.query || act.activity || '';
+    document.getElementById('edit-map').value = act.query || '';
     document.getElementById('edit-lat').value = act.lat || '';
     document.getElementById('edit-lng').value = act.lng || '';
     document.getElementById('edit-website').value = (act.links && act.links.website) ? act.links.website : '';
@@ -694,10 +703,12 @@ function saveActivity() {
     act.links.website = document.getElementById('edit-website').value;
     act.links.webcam = document.getElementById('edit-webcam').value;
     act.links.weather = document.getElementById('edit-weather').value;
+    act.links.other = document.getElementById('edit-other').value;
     
     if(!act.links.website) delete act.links.website;
     if(!act.links.webcam) delete act.links.webcam;
     if(!act.links.weather) delete act.links.weather;
+    if(!act.links.other) delete act.links.other; 
     if(Object.keys(act.links).length === 0) delete act.links;
     
     sortActivities(activities);
