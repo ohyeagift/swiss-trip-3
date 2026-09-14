@@ -36,39 +36,61 @@ const travelData = {
                 {
                     "time": "00:25",
                     "activity": "香港國際機場 HKG",
-                    "altitude": "CX383 飛行時間: 13小時05分",
-                    "query": "香港國際機場"
+                    "altitude": "CX383\n飛行時間: 13小時05分",
+                    "query": ""
                 },
                 {
                     "time": "07:30",
                     "activity": "蘇黎世機場 ZRH",
-                    "query": "Zurich Airport",
-                    "lat": 47.4582,
-                    "lng": 8.5555,
-                    "altitude": "乘搭火車 Zürich Flughafen to Luzern 1hr10mins"
+                    "query": "Zürich Flughafen",
+                    "lat": 47.4500016,
+                    "lng": 8.5625424,
+                    "altitude": "乘搭火車 Zürich Flughafen to Luzern\n1hr10mins"
                 },
                 {
                     "time": "08:15-09:25",
                     "activity": "琉森火車站 Luzern",
                     "altitude": "",
-                    "query": "琉森火車站"
+                    "query": "琉森火車站",
+                    "lat": 47.04948718040626,
+                    "lng": 8.310375808635806
                 },
                 {
-                    "time": "9:45",
-                    "activity": "琉森巴士站",
-                    "altitude": "",
-                    "query": "Torbogen Luzern"
+                    "time": "09:45",
+                    "activity": "琉森巴士站 ",
+                    "altitude": "1) 坐Bus 10 3個站 (8mins)\n    Lucerne Train Station -> Zähringerstrasse\n2) 坐Bus 2 5個站 / Bus 12 4個站 (10mins)\n    Lucerne Train Station -> Hirzenhof\n3) 步行12-15分鐘",
+                    "query": "Torbogen Luzern",
+                    "lat": 47.0507691,
+                    "lng": 8.3102221,
+                    "links": {
+                        "other": "https://www.vbl.ch/fileadmin/01_vblAG/00_News_Aktuelles/2026_News_Aktuelles/Situationsplan_BHF_DMP.pdf"
+                    }
                 },
                 {
                     "time": "10:00-10:30",
                     "activity": "琉森Airbnb",
-                    "altitude": "放低行李",
-                    "query": "Bruchstrasse 35b"
+                    "altitude": "放低行李\n1) 坐Bus 1/ Bus 5 3個站 (9mins)\n    Pilatusplatz -> Kriens, Zentrum Pilatus",
+                    "query": "Bruchstrasse 35b",
+                    "links": {
+                        "other": "https://www.wendyjourney.com/pilatus/"
+                    }
                 },
                 {
-                    "time": "下午",
-                    "activity": "Pilatus 皮拉圖斯峰 (2,128m)",
-                    "altitude": "成人來回 CHF 42 (STP)",
+                    "time": "11:00",
+                    "activity": "纜車站 Kriens ",
+                    "altitude": "08:30-17:45\n成人來回 CHF 42 (STP)\n三段路線 兩種纜車 \n1hr",
+                    "query": "Kriens 纜車",
+                    "lat": 47.0303936,
+                    "lng": 8.2779327,
+                    "links": {
+                        "other": "https://www.wendyjourney.com/pilatus/",
+                        "website": "https://pilatus.ch/en/railway-cableways/timetable"
+                    }
+                },
+                {
+                    "time": "12:00-14:30",
+                    "activity": "皮拉圖斯峰 Pilatus (2,128m)",
+                    "altitude": "午餐 + 山上健行",
                     "lat": 46.9795,
                     "lng": 8.2555,
                     "links": {
@@ -76,20 +98,30 @@ const travelData = {
                         "webcam": "https://pilatus.ch/en/live#c21147",
                         "weather": "https://pilatus.ch/en/live#c21149"
                     },
-                    "query": "Kriens 纜車終點站"
+                    "query": "Pilatus 皮拉圖斯峰"
                 },
                 {
-                    "time": "傍晚",
-                    "activity": "Luzern City Walk 琉森市區漫步",
-                    "query": "Luzern",
-                    "lat": 47.0501,
-                    "lng": 8.3093
+                    "time": "15:00-16:00",
+                    "activity": "纜車站 Fräkmüntegg",
+                    "altitude": "滑梯 10:00-16:00\n成人 CHF 9",
+                    "query": "X7R2+8G 克林斯 瑞士",
+                    "lat": 46.989327,
+                    "lng": 8.24956041779,
+                    "links": {
+                        "website": "https://www.rodelbahn.ch/en/"
+                    }
+                },
+                {
+                    "time": "17:00",
+                    "activity": "琉森Airbnb",
+                    "altitude": "1) Kriens附近有1間 Lidl Schweiz超市\n2) Airbnb附近有4-5間超市\n3) 時間早可以睇埋卡貝爾橋, 耶穌會教堂\n\n坐Bus 5 10個站 (11mins)\nKriens, Zentrum Pilatus -> Hirzenhof",
+                    "query": ""
                 }
             ]
         },
         {
             "day_id": "DAY 2",
-            "date": "10/17 (六  )",
+            "date": "10/17 (六 )",
             "route_title": "琉森 ➔ 鐵力士峰",
             "accommodation": "Luzern",
             "activities": [
@@ -114,7 +146,7 @@ const travelData = {
         },
         {
             "day_id": "DAY 3",
-            "date": "10/18 (日  )",
+            "date": "10/18 (日 )",
             "route_title": "琉森 ➔ 因特拉肯",
             "accommodation": "Interlaken",
             "activities": [
@@ -160,7 +192,7 @@ const travelData = {
         },
         {
             "day_id": "DAY 4",
-            "date": "10/19 (一  )",
+            "date": "10/19 (一 )",
             "route_title": "因特拉肯 ➔ 少女峰",
             "accommodation": "Interlaken",
             "activities": [
@@ -193,7 +225,7 @@ const travelData = {
         },
         {
             "day_id": "DAY 5",
-            "date": "10/20 (二  )",
+            "date": "10/20 (二 )",
             "route_title": "因特拉肯 ➔ First",
             "accommodation": "Interlaken",
             "activities": [
@@ -211,7 +243,7 @@ const travelData = {
         },
         {
             "day_id": "DAY 6",
-            "date": "10/21 (三  )",
+            "date": "10/21 (三 )",
             "route_title": "因特拉肯 ➔ 雪朗峰",
             "accommodation": "Interlaken",
             "activities": [
@@ -244,7 +276,7 @@ const travelData = {
         },
         {
             "day_id": "DAY 7",
-            "date": "10/22 (四  )",
+            "date": "10/22 (四 )",
             "route_title": "伯恩 ➔ 施皮茨",
             "accommodation": "Interlaken",
             "activities": [
@@ -276,7 +308,7 @@ const travelData = {
         },
         {
             "day_id": "DAY 8",
-            "date": "10/23 (五  )",
+            "date": "10/23 (五 )",
             "route_title": "因特拉肯 ➔ 策馬特",
             "accommodation": "Zermatt",
             "activities": [
@@ -335,7 +367,7 @@ const travelData = {
                 },
                 {
                     "time": "中午",
-                    "activity": "Riffelsee 利菲爾湖 (看馬特洪峰倒影  )",
+                    "activity": "Riffelsee 利菲爾湖 (看馬特洪峰倒影 )",
                     "altitude": "2,757m",
                     "lat": 45.9822,
                     "lng": 7.7619
@@ -354,7 +386,7 @@ const travelData = {
         },
         {
             "day_id": "DAY 10",
-            "date": "10/25 (日  )",
+            "date": "10/25 (日 )",
             "route_title": "策馬特 ➔ 蘇黎世",
             "accommodation": "Zurich",
             "activities": [
