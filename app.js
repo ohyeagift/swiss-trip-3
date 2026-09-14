@@ -475,14 +475,13 @@ async function loadDay(index) {
             if (act.links.weather) linksHtml += `<a href="${act.links.weather}" target="_blank" class="link-btn">🌤️ 天氣</a>`;
         }
 
-        const itemHtml = `
+const itemHtml = `
             <div class="timeline-item">
                 <div class="time">${act.time}</div>
                 <div class="marker-icon">${i + 1}</div>
                 <div class="content">
                     <div class="activity-name">${act.activity}</div>
-                                        ${act.altitude ? `<div class="altitude">${act.altitude.replace(/\n/g, '')}</div>` : ''}
-
+                    ${act.altitude ? `<div class="altitude">${act.altitude.replace(/\n/g, '  ')}</div>` : ''}
                     <div class="links">${linksHtml}</div>
                 </div>
             </div>
