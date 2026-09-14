@@ -133,6 +133,7 @@ let map;
 let markers = [];
 let currentDayIndex = 0;
 let editingActivityIndex = null;
+let isAuthenticated = false; // 密碼驗證狀態
 
 // 3. 初始化 Google Maps
 async function initMap() {
@@ -274,7 +275,22 @@ async function updateMapMarkers(dayData) {
     }
 }
 
-// ================= 編輯功能邏輯 =================
+// ================= 編輯與匯出功能邏輯 =================
+
+// 0. 密碼驗證
+function checkPasswordAndOpen() {
+    if (isAuthenticated) {
+        openListModal();
+        return;
+    }
+    const pwd = prompt("請輸入編輯密碼：");
+    if (pwd === "0902") {
+        isAuthenticated = true;
+        openListModal();
+    } else if (pwd !== null) {
+        alert("密碼錯誤，無法編輯！");
+    }
+}
 
 // 1. 打開該日的行程列表
 function openListModal() {
@@ -311,14 +327,14 @@ function deleteActivity(index) {
     if(confirm('確定要刪除這個行程嗎？')) {
         currentData.daily_itinerary[currentDayIndex].activities.splice(index, 1);
         localStorage.setItem('swissTravelData', JSON.stringify(currentData));
-        openListModal(); // 刷新列表
-        loadDay(currentDayIndex); // 刷新背景主畫面
+        openListModal();
+        loadDay(currentDayIndex);
     }
 }
 
-// 3. 打開「新增」表單 (清空欄位)
+// 3. 打開「新增」表單
 function openNewFormModal() {
-    editingActivityIndex = null; // null 代表這是新增的行程
+    editingActivityIndex = null;
     
     document.getElementById('edit-time').value = '';
     document.getElementById('edit-name').value = '';
@@ -331,7 +347,7 @@ function openNewFormModal() {
     document.getElementById('form-modal').classList.add('active');
 }
 
-// 4. 打開「編輯」表單 (填入現有資料)
+// 4. 打開「編輯」表單
 function openFormModal(activityIndex) {
     editingActivityIndex = activityIndex;
     const act = currentData.daily_itinerary[currentDayIndex].activities[activityIndex];
@@ -355,12 +371,11 @@ function closeFormModal() {
 // 5. 智慧時間排序邏輯
 function sortActivities(activities) {
     const getTimeValue = (t) => {
-        if (!t) return 9999; // 沒有時間排最後
+        if (!t) return 9999;
         if (t.includes(':')) {
             const [h, m] = t.split(':');
-            return parseInt(h) * 60 + parseInt(m); // 轉換為分鐘數
+            return parseInt(h) * 60 + parseInt(m);
         }
-        // 處理中文時間描述
         if (t.includes('全日')) return 0;
         if (t.includes('早上') || t.includes('上午')) return 8 * 60;
         if (t.includes('中午')) return 12 * 60;
@@ -379,36 +394,13 @@ function saveActivity() {
     let act;
     
     if (editingActivityIndex === null) {
-        // 新增模式
         act = {};
         activities.push(act);
     } else {
-        // 編輯模式
         act = activities[editingActivityIndex];
     }
     
     act.time = document.getElementById('edit-time').value;
     act.activity = document.getElementById('edit-name').value;
     act.altitude = document.getElementById('edit-content').value;
-    act.query = document.getElementById('edit-map').value;
     
-    if (!act.links) act.links = {};
-    act.links.website = document.getElementById('edit-website').value;
-    act.links.webcam = document.getElementById('edit-webcam').value;
-    act.links.weather = document.getElementById('edit-weather').value;
-    
-    // 清理空連結
-    if(!act.links.website) delete act.links.website;
-    if(!act.links.webcam) delete act.links.webcam;
-    if(!act.links.weather) delete act.links.weather;
-    if(Object.keys(act.links).length === 0) delete act.links;
-    
-    // 執行自動排序
-    sortActivities(activities);
-    
-    // 儲存並刷新
-    localStorage.setItem('swissTravelData', JSON.stringify(currentData));
-    closeFormModal();
-    openListModal();
-    loadDay(currentDayIndex);
-}
