@@ -89,7 +89,7 @@ const travelData = {
         },
         {
             "day_id": "DAY 2",
-            "date": "10/17 (六 )",
+            "date": "10/17 (六  )",
             "route_title": "琉森 ➔ 鐵力士峰",
             "accommodation": "Luzern",
             "activities": [
@@ -114,7 +114,7 @@ const travelData = {
         },
         {
             "day_id": "DAY 3",
-            "date": "10/18 (日 )",
+            "date": "10/18 (日  )",
             "route_title": "琉森 ➔ 因特拉肯",
             "accommodation": "Interlaken",
             "activities": [
@@ -160,7 +160,7 @@ const travelData = {
         },
         {
             "day_id": "DAY 4",
-            "date": "10/19 (一 )",
+            "date": "10/19 (一  )",
             "route_title": "因特拉肯 ➔ 少女峰",
             "accommodation": "Interlaken",
             "activities": [
@@ -193,7 +193,7 @@ const travelData = {
         },
         {
             "day_id": "DAY 5",
-            "date": "10/20 (二 )",
+            "date": "10/20 (二  )",
             "route_title": "因特拉肯 ➔ First",
             "accommodation": "Interlaken",
             "activities": [
@@ -211,7 +211,7 @@ const travelData = {
         },
         {
             "day_id": "DAY 6",
-            "date": "10/21 (三 )",
+            "date": "10/21 (三  )",
             "route_title": "因特拉肯 ➔ 雪朗峰",
             "accommodation": "Interlaken",
             "activities": [
@@ -244,7 +244,7 @@ const travelData = {
         },
         {
             "day_id": "DAY 7",
-            "date": "10/22 (四 )",
+            "date": "10/22 (四  )",
             "route_title": "伯恩 ➔ 施皮茨",
             "accommodation": "Interlaken",
             "activities": [
@@ -276,7 +276,7 @@ const travelData = {
         },
         {
             "day_id": "DAY 8",
-            "date": "10/23 (五 )",
+            "date": "10/23 (五  )",
             "route_title": "因特拉肯 ➔ 策馬特",
             "accommodation": "Zermatt",
             "activities": [
@@ -335,7 +335,7 @@ const travelData = {
                 },
                 {
                     "time": "中午",
-                    "activity": "Riffelsee 利菲爾湖 (看馬特洪峰倒影 )",
+                    "activity": "Riffelsee 利菲爾湖 (看馬特洪峰倒影  )",
                     "altitude": "2,757m",
                     "lat": 45.9822,
                     "lng": 7.7619
@@ -354,7 +354,7 @@ const travelData = {
         },
         {
             "day_id": "DAY 10",
-            "date": "10/25 (日 )",
+            "date": "10/25 (日  )",
             "route_title": "策馬特 ➔ 蘇黎世",
             "accommodation": "Zurich",
             "activities": [
@@ -469,7 +469,7 @@ async function loadDay(index) {
         const searchQuery = encodeURIComponent(act.query || act.activity);
         let linksHtml = `<a href="https://www.google.com/maps/search/?api=1&query=${searchQuery}" target="_blank" class="link-btn">📍 地圖</a>`;
         
-        if (act.links ) {
+        if (act.links  ) {
             if (act.links.website) linksHtml += `<a href="${act.links.website}" target="_blank" class="link-btn">🌐 官網</a>`;
             if (act.links.webcam) linksHtml += `<a href="${act.links.webcam}" target="_blank" class="link-btn">📷 攝影機</a>`;
             if (act.links.weather) linksHtml += `<a href="${act.links.weather}" target="_blank" class="link-btn">🌤️ 天氣</a>`;
@@ -508,7 +508,7 @@ async function loadDay(index) {
         `;
     }
 
-    updateMapMarkers(dayData );
+    updateMapMarkers(dayData  );
 }
 
 // 6. 更新地圖標記
@@ -649,6 +649,7 @@ function openFormModal(activityIndex) {
     document.getElementById('edit-weather').value = (act.links && act.links.weather) ? act.links.weather : '';
     document.getElementById('form-modal').classList.add('active');
 }
+
 function closeFormModal() {
     document.getElementById('form-modal').classList.remove('active');
 }
