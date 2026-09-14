@@ -481,7 +481,8 @@ async function loadDay(index) {
                 <div class="marker-icon">${i + 1}</div>
                 <div class="content">
                     <div class="activity-name">${act.activity}</div>
-                    ${act.altitude ? `<div class="altitude">${act.altitude}</div>` : ''}
+                    ${act.altitude ? `<div class="altitude">${act.altitude.replace(/\n/g, '  
+')}</div>` : ''}
                     <div class="links">${linksHtml}</div>
                 </div>
             </div>
@@ -621,15 +622,15 @@ function deleteActivity(index) {
 // 3. 打開「新增」表單
 function openNewFormModal() {
     editingActivityIndex = null;
-    
     document.getElementById('edit-time').value = '';
     document.getElementById('edit-name').value = '';
     document.getElementById('edit-content').value = '';
     document.getElementById('edit-map').value = '';
+    document.getElementById('edit-lat').value = '';
+    document.getElementById('edit-lng').value = '';
     document.getElementById('edit-website').value = '';
     document.getElementById('edit-webcam').value = '';
     document.getElementById('edit-weather').value = '';
-    
     document.getElementById('form-modal').classList.add('active');
 }
 
@@ -637,19 +638,17 @@ function openNewFormModal() {
 function openFormModal(activityIndex) {
     editingActivityIndex = activityIndex;
     const act = currentData.daily_itinerary[currentDayIndex].activities[activityIndex];
-    
     document.getElementById('edit-time').value = act.time || '';
     document.getElementById('edit-name').value = act.activity || '';
     document.getElementById('edit-content').value = act.altitude || '';
     document.getElementById('edit-map').value = act.query || act.activity || '';
-    
+    document.getElementById('edit-lat').value = act.lat || '';
+    document.getElementById('edit-lng').value = act.lng || '';
     document.getElementById('edit-website').value = (act.links && act.links.website) ? act.links.website : '';
     document.getElementById('edit-webcam').value = (act.links && act.links.webcam) ? act.links.webcam : '';
     document.getElementById('edit-weather').value = (act.links && act.links.weather) ? act.links.weather : '';
-    
     document.getElementById('form-modal').classList.add('active');
 }
-
 function closeFormModal() {
     document.getElementById('form-modal').classList.remove('active');
 }
@@ -677,19 +676,19 @@ function sortActivities(activities) {
 // 6. 儲存編輯/新增內容
 function saveActivity() {
     const activities = currentData.daily_itinerary[currentDayIndex].activities;
-    let act;
-    
-    if (editingActivityIndex === null) {
-        act = {};
-        activities.push(act);
-    } else {
-        act = activities[editingActivityIndex];
-    }
+    let act = editingActivityIndex === null ? {} : activities[editingActivityIndex];
+    if (editingActivityIndex === null) activities.push(act);
     
     act.time = document.getElementById('edit-time').value;
     act.activity = document.getElementById('edit-name').value;
     act.altitude = document.getElementById('edit-content').value;
     act.query = document.getElementById('edit-map').value;
+    
+    // 儲存經緯度
+    const latVal = parseFloat(document.getElementById('edit-lat').value);
+    const lngVal = parseFloat(document.getElementById('edit-lng').value);
+    if (!isNaN(latVal)) act.lat = latVal; else delete act.lat;
+    if (!isNaN(lngVal)) act.lng = lngVal; else delete act.lng;
     
     if (!act.links) act.links = {};
     act.links.website = document.getElementById('edit-website').value;
@@ -702,7 +701,6 @@ function saveActivity() {
     if(Object.keys(act.links).length === 0) delete act.links;
     
     sortActivities(activities);
-    
     localStorage.setItem('swissTravelData', JSON.stringify(currentData));
     closeFormModal();
     openListModal();
