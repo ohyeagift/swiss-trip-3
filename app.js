@@ -481,7 +481,7 @@ const itemHtml = `
                 <div class="marker-icon">${i + 1}</div>
                 <div class="content">
                     <div class="activity-name">${act.activity}</div>
-                    ${act.altitude ? `<div class="altitude">${act.altitude.replace(/\n/g, '  ')}</div>` : ''}
+                    ${act.altitude ? `<div class="altitude">${act.altitude.replace(/\n/g, '<br>')}</div>` : ''}
                     <div class="links">${linksHtml}</div>
                 </div>
             </div>
