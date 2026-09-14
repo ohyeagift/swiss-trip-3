@@ -45,7 +45,10 @@ const travelData = {
                     "query": "Zürich Flughafen",
                     "lat": 47.4500016,
                     "lng": 8.5625424,
-                    "altitude": "乘搭火車 Zürich Flughafen to Luzern\n1hr10mins"
+                    "altitude": "跟著Train Station標誌走\n穿越一條馬路, 通往火車站的建築\n搭乘手扶梯往下-->Bahn Train\n月台區分為 A、B、C與D, 搵二等艙\n檢票時出示STP+護照\n\n乘搭火車 Zürich Flughafen to Luzern\n1hr10mins",
+                    "links": {
+                        "other": "https://goldmichellehhh.com/zurich-airport-to-city-train-transport/"
+                    }
                 },
                 {
                     "time": "08:15-09:25",
