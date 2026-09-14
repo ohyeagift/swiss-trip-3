@@ -3,32 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CH 瑞士之旅</title>
+    <title>瑞士之旅</title>
     <link rel="stylesheet" href="style.css">
-    <!-- 載入 Google Maps API (包含 marker 函式庫以支援進階標記) -->
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDYbRZaCAmgMB3Si3R0m9B6f3kabPGvyMU&libraries=marker&callback=initMap" async defer></script>
 </head>
 <body>
-    <!-- 頂部全局資訊區 (Fixed ) -->
+    <!-- 頂部全局資訊區 -->
     <header class="top-header">
-        <div class="trip-title">瑞士之旅</div>
-        <div class="trip-dates">2026.10.16 - 10.27</div>
+        <div class="header-content">
+            <div>
+                <div class="trip-title">瑞士之旅</div>
+                <div class="trip-dates">2026.10.16 - 10.27</div>
+            </div>
+            <button class="edit-day-btn" onclick="openListModal( )">編輯行程</button>
+        </div>
         <div class="day-title" id="day-title">載入中...</div>
     </header>
 
-    <!-- 互動地圖區 (Fixed) -->
+    <!-- 互動地圖區 -->
     <div class="map-container">
         <div id="map"></div>
     </div>
 
-    <!-- 橫向滑動導航列 (Sticky) -->
-    <div class="tabs-container" id="tabs-container">
-        <!-- JS 動態生成 Tabs -->
+    <!-- 橫向滑動導航列 -->
+    <div class="tabs-container" id="tabs-container"></div>
+
+    <!-- 每日行程時間軸 -->
+    <div class="timeline-container" id="timeline-container"></div>
+
+    <!-- ================= 彈出視窗區 ================= -->
+    
+    <!-- 1. 編輯行程列表 Modal (圖2) -->
+    <div id="list-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="close-btn" onclick="closeListModal()">✕</button>
+                <h3 id="modal-day-title">編輯行程</h3>
+                <div style="width: 24px;"></div>
+            </div>
+            <div class="modal-body" id="edit-list-container">
+                <!-- JS 動態生成列表 -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn-primary" onclick="closeListModal()">完成</button>
+            </div>
+        </div>
     </div>
 
-    <!-- 每日行程時間軸 (Scrollable) -->
-    <div class="timeline-container" id="timeline-container">
-        <!-- JS 動態生成行程 -->
+    <!-- 2. 編輯單一活動 Modal (圖3/圖4) -->
+    <div id="form-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="close-btn" onclick="closeFormModal()">✕</button>
+                <h3>編輯行程活動</h3>
+                <div style="width: 24px;"></div>
+            </div>
+            <div class="modal-body form-body">
+                <div class="form-group">
+                    <label>時間</label>
+                    <input type="text" id="edit-time" placeholder="例如: 07:30 或 上午">
+                </div>
+                <div class="form-group">
+                    <label>名稱</label>
+                    <input type="text" id="edit-name" placeholder="例如: Pilatus 皮拉圖斯峰">
+                </div>
+                <div class="form-group">
+                    <label>內容 (如: 海拔/備註)</label>
+                    <input type="text" id="edit-content" placeholder="例如: 海拔 2,128m">
+                </div>
+                <div class="form-group">
+                    <label>地圖 (搜尋關鍵字)</label>
+                    <input type="text" id="edit-map" placeholder="例如: Pilatus">
+                </div>
+                <div class="form-group">
+                    <label>官網連結</label>
+                    <input type="text" id="edit-website" placeholder="https://...">
+                </div>
+                <div class="form-group">
+                    <label>攝影機連結</label>
+                    <input type="text" id="edit-webcam" placeholder="https://...">
+                </div>
+                <div class="form-group">
+                    <label>天氣連結</label>
+                    <input type="text" id="edit-weather" placeholder="https://...">
+                </div>
+            </div>
+            <div class="modal-footer double-btn">
+                <button class="btn-secondary" onclick="closeFormModal( )">取消</button>
+                <button class="btn-primary" onclick="saveActivity()">完成</button>
+            </div>
+        </div>
     </div>
 
     <script src="app.js"></script>
