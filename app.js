@@ -2,28 +2,28 @@
 const travelData = {
     "accommodations": {
         "Luzern": {
-            "name": "琉森 Bruchstrasse 35b",
+            "name": "琉森Airbnb",
             "query": "Bruchstrasse 35b, Luzern",
             "lat": 47.0485,
             "lng": 8.3
         },
         "Interlaken": {
-            "name": "因特拉肯 Niesenstrasse 16",
+            "name": "因特拉肯Airbnb",
             "query": "Niesenstrasse 16, 3800 Interlaken",
             "lat": 46.683,
             "lng": 7.854
         },
         "Zermatt": {
-            "name": "策馬特 Bachstrasse 90",
-            "query": "Bachstrasse 90, 3920 Zermatt",
-            "lat": 46.0235,
-            "lng": 7.749
+            "name": "策馬特民宿 Haus Gornera",
+            "query": "Haus Gornera",
+            "lat": 46.0179695,
+            "lng": 7.745554
         },
         "Zurich": {
-            "name": "Hotel City Zürich",
+            "name": "蘇黎世酒店 Hotel City Zürich",
             "query": "Hotel City Zürich, Löwenstrasse 34",
-            "lat": 47.3755,
-            "lng": 8.5375
+            "lat": 47.3748796,
+            "lng": 8.5338401
         }
     },
     "daily_itinerary": [
