@@ -5,25 +5,31 @@ const travelData = {
             "name": "琉森Airbnb",
             "query": "Bruchstrasse 35b, Luzern",
             "lat": 47.0485,
-            "lng": 8.3
+            "lng": 8.3,
+            "website": "https://www.airbnb.com.hk/rooms/946984254381831756?adults=4&check_in=2026-10-16&check_out=2026-10-18&guests=4&location=%E7%90%89%E6%A3%AE&search_mode=regular_search&source_impression_id=p3_1781423272_P3usdUJFenx-c6Sm&previous_page_section_name=1001&federated_search_id=874422da-08e7-4819-830b-2b98576cc49c&review_page_entrypoint=show_all&translate_ugc=true"
         },
         "Interlaken": {
             "name": "因特拉肯Airbnb",
             "query": "Niesenstrasse 16, 3800 Interlaken",
             "lat": 46.683,
-            "lng": 7.854
+            "lng": 7.854,
+            "website": "https://www.airbnb.com.hk/rooms/42174522?check_in=2026-10-18&check_out=2026-10-23&guests=4&adults=4&s=67&unique_share_id=c86ef38f-1236-444f-8ae2-3a8976623b95"
         },
         "Zermatt": {
             "name": "策馬特民宿 Haus Gornera",
             "query": "Haus Gornera",
             "lat": 46.0179695,
-            "lng": 7.745554
+            "lng": 7.745554,
+            "website": "https://www.astral-zermatt.ch/en/haus-gornera/3-room-apartment-bodmen--high-ground-floor",
+            "other": "https://www.astral-zermatt.ch/?action=get_file&resource_id=177"
         },
         "Zurich": {
-            "name": "蘇黎世酒店 Hotel City Zürich",
-            "query": "Hotel City Zürich, Löwenstrasse 34",
-            "lat": 47.3748796,
-            "lng": 8.5338401
+            "name": "蘇黎世酒店 Hotel City Zürich Design & Lifestyle",
+            "query": "Hotel City Zürich",
+            "lat": 47.3746304,
+            "lng": 8.5362663,
+            "website": "https://hotelcity.ch/en/business-double-room/",
+            "other": "https://www.trip.com/w/n7NMtQlCMW2"
         }
     },
     "daily_itinerary": [
@@ -73,10 +79,7 @@ const travelData = {
                     "time": "10:00-10:30",
                     "activity": "琉森Airbnb",
                     "altitude": "放低行李\n1 ) 坐Bus 1/ Bus 5 3個站 (9mins)\n    Pilatusplatz -> Kriens, Zentrum Pilatus",
-                    "query": "Bruchstrasse 35b",
-                    "links": {
-                        "other": "https://www.wendyjourney.com/pilatus/"
-                    }
+                    "query": "Bruchstrasse 35b"
                 },
                 {
                     "time": "11:00",
@@ -423,25 +426,26 @@ const travelData = {
             "accommodation": "",
             "activities": [
                 {
-                    "time": "早上",
-                    "activity": "Zurich HB to Zurich Flughafen",
-                    "query": "Zurich Airport",
-                    "lat": 47.4582,
-                    "lng": 8.5555
-                },
-                {
-                    "time": "上午",
-                    "activity": "準備去機場",
-                    "query": "Zurich Airport",
-                    "lat": 47.4582,
-                    "lng": 8.5555
+                    "time": "08:00",
+                    "activity": "火車站 Zurich HB",
+                    "query": "Zürich HB",
+                    "altitude": "乘搭火車 Zurich HB to Zurich Flughafen\n12mins",
+                    "lat": 47.37762,
+                    "lng": 8.5398749
                 },
                 {
                     "time": "11:55",
-                    "activity": "搭乘 CX382 航班返回香港",
-                    "query": "Zurich Airport",
-                    "lat": 47.4582,
-                    "lng": 8.5555
+                    "activity": "蘇黎世機場 ZRH",
+                    "query": "Zürich Flughafen",
+                    "lat": 47.4556824,
+                    "lng": 8.5583601,
+                    "altitude": "09:00到機埸\n退稅? 早餐?\n\nCX382\n飛行時間: 11小時20分"
+                },
+                {
+                    "time": "27/10 06:15",
+                    "activity": "香港國際機場 HKG",
+                    "altitude": "",
+                    "query": ""
                 }
             ]
         }
