@@ -51,7 +51,7 @@ const travelData = {
                     "query": "Zürich Flughafen",
                     "lat": 47.4500016,
                     "lng": 8.5625424,
-                    "altitude": "跟著Train Station標誌走\n穿越一條馬路, 通往火車站的建築\n搭乘手扶梯往下-->Bahn Train\n月台區分為 A、B、C與D, 搵二等艙\n檢票時出示STP+護照\n\n乘搭火車 Zürich Flughafen to Luzern\n1hr10mins",
+                    "altitude": "跟著Train Station標誌走\n穿越一條馬路, 通往火車站的建築\n搭乘手扶梯往下-->Bahn Train\n月台區分為 A、B、C與D, 搵二等艙\n檢票時出示STP+護照\n\n乘搭火車 Zürich Flughafen to Luzern\n08:15-09:25\n1hr10mins",
                     "links": {
                         "other": "https://goldmichellehhh.com/zurich-airport-to-city-train-transport/"
                     }
@@ -132,21 +132,53 @@ const travelData = {
             "accommodation": "Luzern",
             "activities": [
                 {
-                    "time": "09:10",
-                    "activity": "Luzern to Engelberg",
-                    "query": "Luzern Bahnhof",
-                    "lat": 46.82,
-                    "lng": 8.402
+                    "time": "08:45",
+                    "activity": "琉森火車站 Luzern",
+                    "altitude": "乘搭火車 Luzern to Engelberg, Bahnhof\n09:10-09:59\n51mins",
+                    "query": "琉森火車站",
+                    "lat": 47.04948718040626,
+                    "lng": 8.310375808635806,
+                    "links": {
+                        "other": "https://www.sbb.ch/en?stops=Luzern_I8505000~Engelberg_I8508399&day=2026-10-17&time=09_00&moment=dep&trip=0_0&leg=1"
+                    }
                 },
                 {
-                    "time": "上午",
-                    "activity": "Titlis 鐵力士峰",
+                    "time": "09:10-09:21",
+                    "activity": "火車站 Stansstad",
+                    "altitude": "鐵路維修，需轉乘巴士",
+                    "query": "Stansstad, Bahnhof",
+                    "lat": 46.9766049,
+                    "lng": 8.3365733,
+                    "links": {
+                        "other": "https://www.sbb.ch/en?stops=Luzern_I8505000~Engelberg_I8508399&day=2026-10-17&time=09_00&moment=dep&trip=0_0&leg=3"
+                    }
+                },
+                {
+                    "time": "09:24-09:59",
+                    "activity": "英格堡火車站 Engelberg",
+                    "query": "RC93+Q2 恩格爾貝格 瑞士",
+                    "lat": 46.8194375,
+                    "lng": 8.4025625,
+                    "altitude": ""
+                },
+                {
+                    "time": "10:15",
+                    "activity": "纜車站 TITLIS Bergbahnen",
+                    "altitude": "",
+                    "query": "TITLIS Bergbahnen 登山纜車",
+                    "lat": 46.8157618,
+                    "lng": 8.3960728
+                },
+                {
+                    "time": "11:00",
+                    "activity": "Titlis 鐵力士峰 3,238m",
                     "altitude": "3,238m",
                     "lat": 46.772,
                     "lng": 8.426,
                     "links": {
                         "website": "https://www.titlis.ch/"
-                    }
+                    },
+                    "query": ""
                 }
             ]
         },
@@ -430,7 +462,7 @@ const travelData = {
                     "time": "08:00",
                     "activity": "火車站 Zurich HB",
                     "query": "Zürich HB",
-                    "altitude": "乘搭火車 Zurich HB to Zurich Flughafen\n12mins",
+                    "altitude": "08:00-09:00--> 早餐\n09:15到機埸--> 退稅\n\n乘搭火車 Zurich HB to Zurich Flughafen\n12mins",
                     "lat": 47.37762,
                     "lng": 8.5398749
                 },
@@ -440,7 +472,7 @@ const travelData = {
                     "query": "Zürich Flughafen",
                     "lat": 47.4556824,
                     "lng": 8.5583601,
-                    "altitude": "09:00到機埸\n退稅? 早餐?\n\nCX382\n飛行時間: 11小時20分"
+                    "altitude": "CX382\n飛行時間: 11小時20分"
                 },
                 {
                     "time": "27/10 06:15",
