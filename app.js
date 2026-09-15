@@ -448,12 +448,13 @@ const travelData = {
     ]
 };
 
-// 2. 全局變數與資料初始化
-let currentData = JSON.parse(localStorage.getItem('swissTravelData')) || travelData;
+// 2. 全局變數與資料初始化 (使用 _v2 避免讀到舊暫存)
+let currentData = JSON.parse(localStorage.getItem('swissTravelData_v2')) || travelData;
 let map;
 let markers = [];
 let currentDayIndex = 0;
 let editingActivityIndex = null;
+let editingAccKey = null; // 記錄正在編輯的住宿
 let isAuthenticated = false; // 密碼驗證狀態
 
 // 3. 初始化 Google Maps
@@ -500,17 +501,42 @@ async function loadDay(index) {
     const timelineContainer = document.getElementById('timeline-container');
     timelineContainer.innerHTML = '';
 
-    dayData.activities.forEach((act, i) => {
-        const searchQuery = encodeURIComponent(act.query || act.activity);
-        let linksHtml = '';
+    // --- 1. 先加入住宿卡片 (置頂) ---
+    if (dayData.accommodation && currentData.accommodations[dayData.accommodation]) {
+        const acc = currentData.accommodations[dayData.accommodation];
+        let accLinksHtml = '';
         
-        // 1. 如果有輸入 query 才顯示地圖按鈕
+        if (acc.query && acc.query.trim() !== '') {
+            const accSearchQuery = encodeURIComponent(acc.query);
+            accLinksHtml += `<a href="https://www.google.com/maps/search/?api=1&query=${accSearchQuery}" target="_blank" class="link-btn">📍 地圖</a>`;
+        }
+        if (acc.website ) accLinksHtml += `<a href="${acc.website}" target="_blank" class="link-btn">🌐 官網</a>`;
+        if (acc.other) accLinksHtml += `<a href="${acc.other}" target="_blank" class="link-btn">🔗 其他</a>`;
+
+        timelineContainer.innerHTML += `
+            <div class="accommodation-card">
+                <div class="acc-left">
+                    <div class="acc-icon">🏠</div>
+                    <div>
+                        <div class="acc-title">今晚住宿</div>
+                        <div class="acc-name">${acc.name}</div>
+                    </div>
+                </div>
+                <div class="acc-right">
+                    ${accLinksHtml}
+                </div>
+            </div>
+        `;
+    }
+
+    // --- 2. 再加入每日行程 ---
+    dayData.activities.forEach((act, i) => {
+        let linksHtml = '';
         if (act.query && act.query.trim() !== '') {
             const searchQuery = encodeURIComponent(act.query);
             linksHtml += `<a href="https://www.google.com/maps/search/?api=1&query=${searchQuery}" target="_blank" class="link-btn">📍 地圖</a>`;
         }
         
-        // 2. 顯示其他按鈕
         if (act.links ) {
             if (act.links.website) linksHtml += `<a href="${act.links.website}" target="_blank" class="link-btn">🌐 官網</a>`;
             if (act.links.webcam) linksHtml += `<a href="${act.links.webcam}" target="_blank" class="link-btn">📷 攝影機</a>`;
@@ -518,13 +544,14 @@ async function loadDay(index) {
             if (act.links.other) linksHtml += `<a href="${act.links.other}" target="_blank" class="link-btn">🔗 其他</a>`;
         }
 
-const itemHtml = `
+        const itemHtml = `
             <div class="timeline-item">
                 <div class="time">${act.time}</div>
                 <div class="marker-icon">${i + 1}</div>
                 <div class="content">
                     <div class="activity-name">${act.activity}</div>
-                    ${act.altitude ? `<div class="altitude">${act.altitude.replace(/\n/g, '<br>')}</div>` : ''}
+                    ${act.altitude ? `<div class="altitude">${act.altitude.replace(/\n/g, '  
+')}</div>` : ''}
                     <div class="links">${linksHtml}</div>
                 </div>
             </div>
@@ -532,25 +559,7 @@ const itemHtml = `
         timelineContainer.innerHTML += itemHtml;
     });
 
-    if (dayData.accommodation && currentData.accommodations[dayData.accommodation]) {
-        const acc = currentData.accommodations[dayData.accommodation];
-        const accSearchQuery = encodeURIComponent(acc.query || acc.name);
-        
-        timelineContainer.innerHTML += `
-            <div class="accommodation-card">
-                <div class="acc-icon">🏠</div>
-                <div>
-                    <div class="acc-title">今晚住宿</div>
-                    <div class="acc-name">${acc.name}</div>
-                    <div class="links">
-                        <a href="https://www.google.com/maps/search/?api=1&query=${accSearchQuery}" target="_blank" class="link-btn">📍 地圖</a>
-                    </div>
-                </div>
-            </div>
-        `;
-    }
-
-    updateMapMarkers(dayData  );
+    updateMapMarkers(dayData);
 }
 
 // 6. 更新地圖標記
@@ -581,18 +590,20 @@ async function updateMapMarkers(dayData) {
 
     if (dayData.accommodation && currentData.accommodations[dayData.accommodation]) {
         const acc = currentData.accommodations[dayData.accommodation];
-        const accDiv = document.createElement('div');
-        accDiv.className = 'custom-map-marker hotel';
-        accDiv.innerText = '🏠';
+        if (acc.lat && acc.lng) {
+            const accDiv = document.createElement('div');
+            accDiv.className = 'custom-map-marker hotel';
+            accDiv.innerText = '🏠';
 
-        const accMarker = new AdvancedMarkerElement({
-            map: map,
-            position: { lat: acc.lat, lng: acc.lng },
-            content: accDiv,
-            title: acc.name
-        });
-        markers.push(accMarker);
-        bounds.extend({ lat: acc.lat, lng: acc.lng });
+            const accMarker = new AdvancedMarkerElement({
+                map: map,
+                position: { lat: acc.lat, lng: acc.lng },
+                content: accDiv,
+                title: acc.name
+            });
+            markers.push(accMarker);
+            bounds.extend({ lat: acc.lat, lng: acc.lng });
+        }
     }
 
     if (!bounds.isEmpty()) {
@@ -628,8 +639,26 @@ function openListModal() {
     
     const container = document.getElementById('edit-list-container');
     container.innerHTML = '';
+
+    // 加入編輯住宿的按鈕 (置頂)
+    if (dayData.accommodation && currentData.accommodations[dayData.accommodation]) {
+        const accName = currentData.accommodations[dayData.accommodation].name;
+        container.innerHTML += `
+            <div class="edit-list-item" style="background: #E8F5E9; border-color: #C8E6C9;">
+                <div class="edit-list-info">
+                    <div class="t">🏠 今晚住宿</div>
+                    <div class="n">${accName}</div>
+                </div>
+                <div class="edit-list-actions">
+                    <button onclick="openAccFormModal('${dayData.accommodation}')">編輯</button>
+                </div>
+            </div>
+        `;
+    }
     
-    dayData.activities.forEach((act, i) => {
+    dayData.activities.forEach((act, i)
+
+            dayData.activities.forEach((act, i) => {
         container.innerHTML += `
             <div class="edit-list-item">
                 <div class="edit-list-info">
@@ -644,9 +673,6 @@ function openListModal() {
         `;
     });
     
-    document.getElementById('list-modal').classList.add('active');
-}
-
 function closeListModal() {
     document.getElementById('list-modal').classList.remove('active');
 }
@@ -655,7 +681,7 @@ function closeListModal() {
 function deleteActivity(index) {
     if(confirm('確定要刪除這個行程嗎？')) {
         currentData.daily_itinerary[currentDayIndex].activities.splice(index, 1);
-        localStorage.setItem('swissTravelData', JSON.stringify(currentData));
+        localStorage.setItem('swissTravelData_v2', JSON.stringify(currentData));
         openListModal();
         loadDay(currentDayIndex);
     }
@@ -690,6 +716,7 @@ function openFormModal(activityIndex) {
     document.getElementById('edit-website').value = (act.links && act.links.website) ? act.links.website : '';
     document.getElementById('edit-webcam').value = (act.links && act.links.webcam) ? act.links.webcam : '';
     document.getElementById('edit-weather').value = (act.links && act.links.weather) ? act.links.weather : '';
+    document.getElementById('edit-other').value = (act.links && act.links.other) ? act.links.other : '';
     document.getElementById('form-modal').classList.add('active');
 }
 
@@ -728,7 +755,6 @@ function saveActivity() {
     act.altitude = document.getElementById('edit-content').value;
     act.query = document.getElementById('edit-map').value;
     
-    // 儲存經緯度
     const latVal = parseFloat(document.getElementById('edit-lat').value);
     const lngVal = parseFloat(document.getElementById('edit-lng').value);
     if (!isNaN(latVal)) act.lat = latVal; else delete act.lat;
@@ -743,12 +769,53 @@ function saveActivity() {
     if(!act.links.website) delete act.links.website;
     if(!act.links.webcam) delete act.links.webcam;
     if(!act.links.weather) delete act.links.weather;
-    if(!act.links.other) delete act.links.other; 
+    if(!act.links.other) delete act.links.other;
     if(Object.keys(act.links).length === 0) delete act.links;
     
     sortActivities(activities);
-    localStorage.setItem('swissTravelData', JSON.stringify(currentData));
+    localStorage.setItem('swissTravelData_v2', JSON.stringify(currentData));
     closeFormModal();
+    openListModal();
+    loadDay(currentDayIndex);
+}
+
+// --- 新增：編輯住宿相關邏輯 ---
+function openAccFormModal(accKey) {
+    editingAccKey = accKey;
+    const acc = currentData.accommodations[accKey];
+    document.getElementById('edit-acc-name').value = acc.name || '';
+    document.getElementById('edit-acc-map').value = acc.query || '';
+    document.getElementById('edit-acc-lat').value = acc.lat || '';
+    document.getElementById('edit-acc-lng').value = acc.lng || '';
+    document.getElementById('edit-acc-website').value = acc.website || '';
+    document.getElementById('edit-acc-other').value = acc.other || '';
+    document.getElementById('acc-form-modal').classList.add('active');
+}
+
+function closeAccFormModal() {
+    document.getElementById('acc-form-modal').classList.remove('active');
+}
+
+function saveAccommodation() {
+    if (!editingAccKey) return;
+    const acc = currentData.accommodations[editingAccKey];
+    
+    acc.name = document.getElementById('edit-acc-name').value;
+    acc.query = document.getElementById('edit-acc-map').value;
+    
+    const latVal = parseFloat(document.getElementById('edit-acc-lat').value);
+    const lngVal = parseFloat(document.getElementById('edit-acc-lng').value);
+    if (!isNaN(latVal)) acc.lat = latVal; else delete acc.lat;
+    if (!isNaN(lngVal)) acc.lng = lngVal; else delete acc.lng;
+    
+    acc.website = document.getElementById('edit-acc-website').value;
+    acc.other = document.getElementById('edit-acc-other').value;
+    
+    if(!acc.website) delete acc.website;
+    if(!acc.other) delete acc.other;
+    
+    localStorage.setItem('swissTravelData_v2', JSON.stringify(currentData));
+    closeAccFormModal();
     openListModal();
     loadDay(currentDayIndex);
 }
@@ -757,11 +824,9 @@ function saveActivity() {
 function exportData() {
     const dataStr = JSON.stringify(currentData, null, 4);
     
-    // 讀取目前的 app.js 內容並替換 travelData 區塊
     fetch('app.js')
         .then(response => response.text())
         .then(text => {
-            // 尋找 const travelData = { ... }; 的範圍並替換
             const regex = /const travelData = \{[\s\S]*?\n\};\n\n\/\/ 2\. 全局變數/;
             const newCode = text.replace(regex, `const travelData = ${dataStr};\n\n// 2. 全局變數`);
             
@@ -783,3 +848,4 @@ function exportData() {
             alert("無法讀取原始檔案，請確認網頁環境。");
         });
 }
+
