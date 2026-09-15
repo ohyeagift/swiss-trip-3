@@ -547,8 +547,7 @@ async function loadDay(index) {
         // 【防錯設計】把換行處理獨立拿出來寫，絕對不會再報錯！
         let altitudeHtml = '';
         if (act.altitude) {
-            const formattedText = act.altitude.replace(/\n/g, '  
-');
+            const formattedText = act.altitude.replace(/\n/g, '<br>');
             altitudeHtml = `<div class="altitude">${formattedText}</div>`;
         }
 
