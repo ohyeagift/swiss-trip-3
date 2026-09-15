@@ -656,9 +656,7 @@ function openListModal() {
         `;
     }
     
-    dayData.activities.forEach((act, i)
-
-            dayData.activities.forEach((act, i) => {
+    dayData.activities.forEach((act, i) => {
         container.innerHTML += `
             <div class="edit-list-item">
                 <div class="edit-list-info">
@@ -673,6 +671,9 @@ function openListModal() {
         `;
     });
     
+    document.getElementById('list-modal').classList.add('active');
+}
+
 function closeListModal() {
     document.getElementById('list-modal').classList.remove('active');
 }
@@ -848,4 +849,3 @@ function exportData() {
             alert("無法讀取原始檔案，請確認網頁環境。");
         });
 }
-
