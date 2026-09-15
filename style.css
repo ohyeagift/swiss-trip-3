@@ -208,4 +208,32 @@ body {
     display: flex; justify-content: space-between; align-items: center;
     padding: 15px; border: 1px solid #EEE; border-radius: 8px; margin-bottom: 10px;
 }
-.edit-list-info .t { font-size: 12px; color: #888; margin-bottom: 
+.edit-list-info .t { font-size: 12px; color: #888; margin-bottom: 4px; }
+.edit-list-info .n { font-size: 15px; font-weight: bold; color: #333; }
+.edit-list-actions { display: flex; gap: 10px; }
+.edit-list-actions button { background: none; border: none; color: var(--swiss-red); font-size: 14px; cursor: pointer; font-weight: bold; }
+.edit-list-actions button.delete-btn { color: #999; font-weight: normal; }
+
+.form-group { margin-bottom: 15px; }
+.form-group label { display: block; font-size: 12px; color: #666; margin-bottom: 5px; }
+.form-group input {
+    width: 100%; padding: 10px 12px; border: 1px solid #DDD; border-radius: 8px;
+    font-size: 14px; color: #333; background: #FAFAFA;
+}
+.form-group input:focus { outline: none; border-color: #0056B3; background: white; }
+
+/* 加入多行輸入框的樣式 */
+.form-group textarea {
+    width: 100%; padding: 10px 12px; border: 1px solid #DDD; border-radius: 8px;
+    font-size: 14px; color: #333; background: #FAFAFA; resize: vertical;
+}
+.form-group textarea:focus { outline: none; border-color: #0056B3; background: white; }
+
+.sort-hint {
+    font-size: 12px; color: #888; text-align: center; margin-bottom: 15px;
+    background: #F9F9F9; padding: 8px; border-radius: 20px;
+}
+.add-btn {
+    margin-top: 15px; border: 1px dashed var(--swiss-red); color: var(--swiss-red);
+    background: #FFF9F9;
+}
