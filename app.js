@@ -599,7 +599,7 @@ async function updateMapMarkers(dayData) {
         }
     });
 
-    if (dayData.accommodation && currentData.accommodations[dayData.accommodation] && !dayData.hide_acc_card) {
+    if (dayData.accommodation && currentData.accommodations[dayData.accommodation]) {
         const acc = currentData.accommodations[dayData.accommodation];
         if (acc.lat && acc.lng) {
             const accDiv = document.createElement('div');
