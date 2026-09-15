@@ -423,7 +423,8 @@ const travelData = {
             "day_id": "DAY 11",
             "date": "10/26 (一)",
             "route_title": "蘇黎世 ➔ 香港",
-            "accommodation": "",
+            "accommodation": "Zurich",
+            "hide_acc_card": true,
             "activities": [
                 {
                     "time": "08:00",
@@ -453,7 +454,7 @@ const travelData = {
 };
 
 // 2. 全局變數與資料初始化 (使用 _v3 徹底清除舊暫存)
-let currentData = JSON.parse(localStorage.getItem('swissTravelData_v3')) || travelData;
+let currentData = JSON.parse(localStorage.getItem('swissTravelData_v4')) || travelData;
 let map;
 let markers = [];
 let currentDayIndex = 0;
@@ -506,7 +507,7 @@ async function loadDay(index) {
     timelineContainer.innerHTML = '';
 
     // --- 1. 先加入住宿卡片 (置頂) ---
-    if (dayData.accommodation && currentData.accommodations[dayData.accommodation]) {
+        if (dayData.accommodation && currentData.accommodations[dayData.accommodation] && !dayData.hide_acc_card) {
         const acc = currentData.accommodations[dayData.accommodation];
         let accLinksHtml = '';
         
@@ -598,7 +599,7 @@ async function updateMapMarkers(dayData) {
         }
     });
 
-    if (dayData.accommodation && currentData.accommodations[dayData.accommodation]) {
+    if (dayData.accommodation && currentData.accommodations[dayData.accommodation] && !dayData.hide_acc_card) {
         const acc = currentData.accommodations[dayData.accommodation];
         if (acc.lat && acc.lng) {
             const accDiv = document.createElement('div');
@@ -692,7 +693,7 @@ function closeListModal() {
 function deleteActivity(index) {
     if(confirm('確定要刪除這個行程嗎？')) {
         currentData.daily_itinerary[currentDayIndex].activities.splice(index, 1);
-        localStorage.setItem('swissTravelData_v3', JSON.stringify(currentData));
+        localStorage.setItem('swissTravelData_v4', JSON.stringify(currentData));
         openListModal();
         loadDay(currentDayIndex);
     }
@@ -784,7 +785,7 @@ function saveActivity() {
     if(Object.keys(act.links).length === 0) delete act.links;
     
     sortActivities(activities);
-    localStorage.setItem('swissTravelData_v3', JSON.stringify(currentData));
+    localStorage.setItem('swissTravelData_v4', JSON.stringify(currentData));
     closeFormModal();
     openListModal();
     loadDay(currentDayIndex);
@@ -825,7 +826,7 @@ function saveAccommodation() {
     if(!acc.website) delete acc.website;
     if(!acc.other) delete acc.other;
     
-    localStorage.setItem('swissTravelData_v3', JSON.stringify(currentData));
+    localStorage.setItem('swissTravelData_v4', JSON.stringify(currentData));
     closeAccFormModal();
     openListModal();
     loadDay(currentDayIndex);
