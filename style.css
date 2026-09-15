@@ -90,7 +90,7 @@ body {
 .timeline-item::before {
     content: '';
     position: absolute;
-    left: 94px; /* 配合加寬的時間欄位向右移 */
+    left: 94px;
     top: 30px;
     bottom: -20px;
     border-left: 2px dashed #FFCDD2;
@@ -99,7 +99,7 @@ body {
 .timeline-item:last-child::before { display: none; }
 
 .time { 
-    width: 85px; /* 加寬以容納 08:15-09:25 */
+    width: 85px; 
     flex-shrink: 0; 
     font-size: 13px; 
     font-weight: bold; 
@@ -144,19 +144,30 @@ body {
     border: 1px solid #FFD6D6;
 }
 
+/* 住宿卡片 (左右排版) */
 .accommodation-card {
     background: #E8F5E9;
     border: 1px solid #C8E6C9;
     border-radius: 12px;
     padding: 15px;
-    margin-top: 20px;
+    margin-bottom: 20px; /* 改為下方留白，因為現在在最上面 */
     display: flex;
-    align-items: flex-start;
+    justify-content: space-between; /* 左右分開 */
+    align-items: center; /* 垂直置中 */
     box-shadow: 0 2px 8px rgba(0,0,0,0.04);
 }
-.acc-icon { font-size: 24px; margin-right: 15px; margin-top: 2px; }
+.acc-left { display: flex; align-items: center; }
+.acc-icon { font-size: 24px; margin-right: 12px; }
 .acc-title { font-size: 12px; color: #2E7D32; font-weight: bold; margin-bottom: 2px; }
-.acc-name { font-size: 15px; color: #1B5E20; margin-bottom: 8px; }
+.acc-name { font-size: 15px; color: #1B5E20; }
+.acc-right { 
+    display: flex; 
+    flex-direction: row; 
+    gap: 6px; 
+    flex-wrap: wrap; 
+    justify-content: flex-end; 
+    max-width: 50%; 
+}
 
 .custom-map-marker {
     background-color: var(--swiss-red);
@@ -197,32 +208,4 @@ body {
     display: flex; justify-content: space-between; align-items: center;
     padding: 15px; border: 1px solid #EEE; border-radius: 8px; margin-bottom: 10px;
 }
-.edit-list-info .t { font-size: 12px; color: #888; margin-bottom: 4px; }
-.edit-list-info .n { font-size: 15px; font-weight: bold; color: #333; }
-.edit-list-actions { display: flex; gap: 10px; }
-.edit-list-actions button { background: none; border: none; color: var(--swiss-red); font-size: 14px; cursor: pointer; font-weight: bold; }
-.edit-list-actions button.delete-btn { color: #999; font-weight: normal; }
-
-.form-group { margin-bottom: 15px; }
-.form-group label { display: block; font-size: 12px; color: #666; margin-bottom: 5px; }
-.form-group input {
-    width: 100%; padding: 10px 12px; border: 1px solid #DDD; border-radius: 8px;
-    font-size: 14px; color: #333; background: #FAFAFA;
-}
-.form-group input:focus { outline: none; border-color: #0056B3; background: white; }
-
-/* 加入多行輸入框的樣式 */
-.form-group textarea {
-    width: 100%; padding: 10px 12px; border: 1px solid #DDD; border-radius: 8px;
-    font-size: 14px; color: #333; background: #FAFAFA; resize: vertical;
-}
-.form-group textarea:focus { outline: none; border-color: #0056B3; background: white; }
-
-.sort-hint {
-    font-size: 12px; color: #888; text-align: center; margin-bottom: 15px;
-    background: #F9F9F9; padding: 8px; border-radius: 20px;
-}
-.add-btn {
-    margin-top: 15px; border: 1px dashed var(--swiss-red); color: var(--swiss-red);
-    background: #FFF9F9;
-}
+.edit-list-info .t { font-size: 12px; color: #888; margin-bottom: 
