@@ -70,15 +70,15 @@
                 </div>
                 <div class="form-group">
                     <label>名稱</label>
-                    <input type="text" id="edit-name" placeholder="">
+                    <input type="text" id="edit-name" placeholder="例如: Pilatus 皮拉圖斯峰">
                 </div>
                 <div class="form-group">
-                    <label>備註 (可按 Enter 換行)</label>
-                    <textarea id="edit-content" rows="3" placeholder=""></textarea>
+                    <label>內容 (如: 海拔/備註 - 可按 Enter 換行)</label>
+                    <textarea id="edit-content" rows="3" placeholder="例如: 海拔 2,128m&#10;放低行李"></textarea>
                 </div>
                 <div class="form-group">
-                    <label>地圖連結</label>
-                    <input type="text" id="edit-map" placeholder="輸入搜索關鍵字">
+                    <label>地圖 (搜尋關鍵字 - 用於按鈕連結)</label>
+                    <input type="text" id="edit-map" placeholder="例如: Pilatus">
                 </div>
                 <div class="form-group" style="display: flex; gap: 10px;">
                     <div style="flex: 1;">
@@ -110,6 +110,49 @@
             <div class="modal-footer double-btn">
                 <button class="btn-secondary" onclick="closeFormModal( )">取消</button>
                 <button class="btn-primary" onclick="saveActivity()">完成</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. 編輯住宿 Modal -->
+    <div id="acc-form-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="close-btn" onclick="closeAccFormModal()">✕</button>
+                <h3>編輯住宿資訊</h3>
+                <div style="width: 24px;"></div>
+            </div>
+            <div class="modal-body form-body">
+                <div class="form-group">
+                    <label>住宿名稱</label>
+                    <input type="text" id="edit-acc-name">
+                </div>
+                <div class="form-group">
+                    <label>地圖 (搜尋關鍵字)</label>
+                    <input type="text" id="edit-acc-map">
+                </div>
+                <div class="form-group" style="display: flex; gap: 10px;">
+                    <div style="flex: 1;">
+                        <label>緯度 Lat</label>
+                        <input type="number" id="edit-acc-lat" step="any">
+                    </div>
+                    <div style="flex: 1;">
+                        <label>經度 Lng</label>
+                        <input type="number" id="edit-acc-lng" step="any">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>官網連結</label>
+                    <input type="text" id="edit-acc-website" placeholder="https://...">
+                </div>
+                <div class="form-group">
+                    <label>其他連結</label>
+                    <input type="text" id="edit-acc-other" placeholder="https://...">
+                </div>
+            </div>
+            <div class="modal-footer double-btn">
+                <button class="btn-secondary" onclick="closeAccFormModal( )">取消</button>
+                <button class="btn-primary" onclick="saveAccommodation()">完成</button>
             </div>
         </div>
     </div>
