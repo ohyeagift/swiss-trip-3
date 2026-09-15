@@ -544,14 +544,21 @@ async function loadDay(index) {
             if (act.links.other) linksHtml += `<a href="${act.links.other}" target="_blank" class="link-btn">🔗 其他</a>`;
         }
 
+        // 【防錯設計】把換行處理獨立拿出來寫，絕對不會再報錯！
+        let altitudeHtml = '';
+        if (act.altitude) {
+            const formattedText = act.altitude.replace(/\n/g, '  
+');
+            altitudeHtml = `<div class="altitude">${formattedText}</div>`;
+        }
+
         const itemHtml = `
             <div class="timeline-item">
                 <div class="time">${act.time}</div>
                 <div class="marker-icon">${i + 1}</div>
                 <div class="content">
                     <div class="activity-name">${act.activity}</div>
-                    ${act.altitude ? `<div class="altitude">${act.altitude.replace(/\n/g, '  
-')}</div>` : ''}
+                    ${altitudeHtml}
                     <div class="links">${linksHtml}</div>
                 </div>
             </div>
