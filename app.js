@@ -191,9 +191,15 @@ function loadPreTripExpenses() {
     currentData.pre_trip_expenses.categories.forEach(cat => {
         let itemsHtml = '';
         cat.items.forEach(item => {
-            // 組合金額標籤 (移除 note 備註)
+            // 組合金額標籤
             let tags = '';
-            if (item.total) tags += `<span class="val-tag">房價總計: ${item.total}</span>`;
+            if (item.total) {
+                // 根據類別名稱，自動切換「總計」的顯示文字
+                let totalLabel = "總計";
+                if (cat.title.includes('住宿')) totalLabel = "房價總計";
+                
+                tags += `<span class="val-tag">${totalLabel}: ${item.total}</span>`;
+            }
             if (item.per_night) tags += `<span class="val-tag">每晚: ${item.per_night}</span>`;
             if (item.per_person) tags += `<span class="val-tag highlight">每人: ${item.per_person}</span>`;
             
