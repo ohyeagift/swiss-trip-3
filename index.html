@@ -8,17 +8,17 @@
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDYbRZaCAmgMB3Si3R0m9B6f3kabPGvyMU&libraries=marker&callback=initMap" async defer></script>
 </head>
 <body>
-    <!-- 觀看密碼專屬畫面 (預設隱藏 ，由 JS 控制) -->
+        <!-- 觀看密碼畫面 -->
     <div id="password-overlay" class="password-overlay">
         <div class="pwd-box">
             <h2>🔒 私密行程</h2>
-            <p>請輸入觀看密碼  
-<small>(提示：出發日期)</small></p>
-            <input type="password" id="view-pwd-input" placeholder="請輸入密碼">
-            <button onclick="verifyViewPassword()">進入</button>
+            <p>請輸入密碼以查看詳細行程
+ <small>(提示：出發日期)</small></p>
+            <input type="password" id="view-pwd-input" placeholder="請輸入 4 位數密碼">
+            <button onclick="verifyViewPassword()">確認</button>
         </div>
     </div>
-
+    
     <!-- 頂部全局資訊區 -->
     <header class="top-header">
         <div class="header-content">
