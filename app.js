@@ -180,7 +180,7 @@ async function loadDay(index) {
 function loadPreTripExpenses() {
     currentDayIndex = 'expense';
     document.querySelector('.map-container').style.display = 'none'; // 隱藏地圖，騰出空間
-    document.getElementById('day-title').innerText = "事前支出明細";
+    document.getElementById('day-title').innerText = "支出明細";
     
     const timelineContainer = document.getElementById('timeline-container');
     timelineContainer.innerHTML = '';
@@ -193,7 +193,7 @@ function loadPreTripExpenses() {
         cat.items.forEach(item => {
             // 組合金額標籤 (移除 note 備註)
             let tags = '';
-            if (item.total) tags += `<span class="val-tag">總計: ${item.total}</span>`;
+            if (item.total) tags += `<span class="val-tag">房價總計: ${item.total}</span>`;
             if (item.per_person) tags += `<span class="val-tag highlight">每人: ${item.per_person}</span>`;
             if (item.per_night) tags += `<span class="val-tag">每晚: ${item.per_night}</span>`;
             
@@ -217,8 +217,7 @@ function loadPreTripExpenses() {
 
     html += `
         <div class="expense-total-row">
-            總計：  
-
+            每人總計：
             <span class="highlight-yellow" style="font-size: 20px; display: inline-block; margin-top: 8px;">HK$${currentData.pre_trip_expenses.summary.total_per_person}</span>
         </div>
     `;
