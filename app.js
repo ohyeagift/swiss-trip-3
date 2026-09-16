@@ -285,60 +285,180 @@ function checkPasswordAndOpen() {
     else if (pwd !== null) { alert("密碼錯誤，無法編輯！"); }
 }
 
+let editingExpCatIndex = null;
+let editingExpItemIndex = null;
+
 function openListModal() {
-        if (currentDayIndex === 'expense') {
-        alert("事前支出明細請直接在 JSONBin 後台修改資料。");
-        return;
-    }
-    const dayData = currentData.daily_itinerary[currentDayIndex];
-    document.getElementById('modal-day-title').innerText = `編輯 ${dayData.day_id} 行程`;
     const container = document.getElementById('edit-list-container');
     container.innerHTML = '';
 
-    const isChecked = currentData.requireViewPassword ? 'checked' : '';
-    container.innerHTML += `
-        <div class="edit-list-item" style="background: #FFF3E0; border-color: #FFE0B2; margin-bottom: 15px;">
-            <div class="edit-list-info">
-                <div class="n" style="color: #E65100;">🔒 啟用觀看密碼 (1016)</div>
-                <div class="t">開啟後，朋友需輸入密碼才能看行程</div>
-            </div>
-            <label class="switch">
-                <input type="checkbox" id="pwd-toggle" ${isChecked} onchange="toggleViewPassword()">
-                <span class="slider round"></span>
-            </label>
-        </div>
-    `;
+    if (currentDayIndex === 'expense') {
+        // --- 編輯支出明細模式 ---
+        document.getElementById('modal-day-title').innerText = `編輯 支出明細`;
+        document.querySelector('#list-modal .add-btn').style.display = 'none'; // 隱藏原本的新增按鈕
+        document.querySelector('#list-modal .sort-hint').style.display = 'none';
 
-    if (dayData.accommodation && currentData.accommodations[dayData.accommodation] && !dayData.hide_acc_card) {
-        const accName = currentData.accommodations[dayData.accommodation].name;
+        // 1. 總計區塊
         container.innerHTML += `
-            <div class="edit-list-item" style="background: #E8F5E9; border-color: #C8E6C9;">
+            <div class="edit-list-item" style="background: #FFF9C4; border-color: #FFE082; margin-bottom: 15px;">
                 <div class="edit-list-info">
-                    <div class="t">🏠 今晚住宿</div>
-                    <div class="n">${accName}</div>
+                    <div class="t">總計每人支出</div>
+                    <div class="n" style="color: #F57F17; font-size: 18px;">HK$${currentData.pre_trip_expenses.summary.total_per_person}</div>
                 </div>
                 <div class="edit-list-actions">
-                    <button onclick="openAccFormModal('${dayData.accommodation}')">編輯</button>
+                    <button onclick="openExpenseSummaryModal()">編輯</button>
                 </div>
             </div>
         `;
+
+        // 2. 各類別項目
+        currentData.pre_trip_expenses.categories.forEach((cat, cIdx) => {
+            container.innerHTML += `<h4 style="margin: 15px 0 10px; color: var(--swiss-red); border-bottom: 1px solid #FFEBEE; padding-bottom: 5px;">${cat.title}</h4>`;
+            
+            cat.items.forEach((item, iIdx) => {
+                container.innerHTML += `
+                    <div class="edit-list-item">
+                        <div class="edit-list-info">
+                            <div class="n" style="white-space: pre-wrap;">${item.name}</div>
+                            <div class="t">${item.total ? '總計: ' + item.total : ''}</div>
+                        </div>
+                        <div class="edit-list-actions">
+                            <button onclick="openExpenseFormModal(${cIdx}, ${iIdx})">編輯</button>
+                            <button class="delete-btn" onclick="deleteExpenseItem(${cIdx}, ${iIdx})">刪除</button>
+                        </div>
+                    </div>
+                `;
+            });
+            // 每個類別下方加入專屬的新增按鈕
+            container.innerHTML += `<button class="btn-secondary add-btn" style="margin-top: 5px; display: block; width: 100%;" onclick="openExpenseFormModal(${cIdx}, null)">+ 新增 ${cat.title.split(' ')[1] || '項目'}</button>`;
+        });
+
+    } else {
+        // --- 編輯每日行程模式 ---
+        document.querySelector('#list-modal .add-btn').style.display = 'block';
+        document.querySelector('#list-modal .sort-hint').style.display = 'block';
+        
+        const dayData = currentData.daily_itinerary[currentDayIndex];
+        document.getElementById('modal-day-title').innerText = `編輯 ${dayData.day_id} 行程`;
+        
+        const isChecked = currentData.requireViewPassword ? 'checked' : '';
+        container.innerHTML += `
+            <div class="edit-list-item" style="background: #FFF3E0; border-color: #FFE0B2; margin-bottom: 15px;">
+                <div class="edit-list-info">
+                    <div class="n" style="color: #E65100;">🔒 啟用觀看密碼 (1016)</div>
+                    <div class="t">開啟後，朋友需輸入密碼才能看行程</div>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="pwd-toggle" ${isChecked} onchange="toggleViewPassword()">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+        `;
+
+        if (dayData.accommodation && currentData.accommodations[dayData.accommodation] && !dayData.hide_acc_card) {
+            const accName = currentData.accommodations[dayData.accommodation].name;
+            container.innerHTML += `
+                <div class="edit-list-item" style="background: #E8F5E9; border-color: #C8E6C9;">
+                    <div class="edit-list-info">
+                        <div class="t">🏠 今晚住宿</div>
+                        <div class="n">${accName}</div>
+                    </div>
+                    <div class="edit-list-actions">
+                        <button onclick="openAccFormModal('${dayData.accommodation}')">編輯</button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        dayData.activities.forEach((act, i) => {
+            container.innerHTML += `
+                <div class="edit-list-item">
+                    <div class="edit-list-info">
+                        <div class="t">${act.time}</div>
+                        <div class="n">${act.activity}</div>
+                    </div>
+                    <div class="edit-list-actions">
+                        <button onclick="openFormModal(${i})">編輯</button>
+                        <button class="delete-btn" onclick="deleteActivity(${i})">刪除</button>
+                    </div>
+                </div>
+            `;
+        });
     }
     
-    dayData.activities.forEach((act, i) => {
-        container.innerHTML += `
-            <div class="edit-list-item">
-                <div class="edit-list-info">
-                    <div class="t">${act.time}</div>
-                    <div class="n">${act.activity}</div>
-                </div>
-                <div class="edit-list-actions">
-                    <button onclick="openFormModal(${i})">編輯</button>
-                    <button class="delete-btn" onclick="deleteActivity(${i})">刪除</button>
-                </div>
-            </div>
-        `;
-    });
     document.getElementById('list-modal').classList.add('active');
+}
+
+// --- 新增：支出明細的編輯功能 ---
+function openExpenseFormModal(catIdx, itemIdx) {
+    editingExpCatIndex = catIdx;
+    editingExpItemIndex = itemIdx;
+    
+    if (itemIdx !== null) {
+        const item = currentData.pre_trip_expenses.categories[catIdx].items[itemIdx];
+        document.getElementById('edit-exp-name').value = item.name || '';
+        document.getElementById('edit-exp-total').value = item.total || '';
+        document.getElementById('edit-exp-person').value = item.per_person || '';
+        document.getElementById('edit-exp-night').value = item.per_night || '';
+        document.getElementById('edit-exp-miles').value = item.asiamiles || '';
+    } else {
+        document.getElementById('edit-exp-name').value = '';
+        document.getElementById('edit-exp-total').value = '';
+        document.getElementById('edit-exp-person').value = '';
+        document.getElementById('edit-exp-night').value = '';
+        document.getElementById('edit-exp-miles').value = '';
+    }
+    document.getElementById('expense-form-modal').classList.add('active');
+}
+
+function closeExpenseFormModal() {
+    document.getElementById('expense-form-modal').classList.remove('active');
+}
+
+function saveExpenseItem() {
+    const cat = currentData.pre_trip_expenses.categories[editingExpCatIndex];
+    let item = editingExpItemIndex === null ? {} : cat.items[editingExpItemIndex];
+    
+    item.name = document.getElementById('edit-exp-name').value;
+    item.total = document.getElementById('edit-exp-total').value;
+    item.per_person = document.getElementById('edit-exp-person').value;
+    item.per_night = document.getElementById('edit-exp-night').value;
+    item.asiamiles = document.getElementById('edit-exp-miles').value;
+    
+    if(!item.total) delete item.total;
+    if(!item.per_person) delete item.per_person;
+    if(!item.per_night) delete item.per_night;
+    if(!item.asiamiles) delete item.asiamiles;
+    
+    if (editingExpItemIndex === null) cat.items.push(item);
+    
+    closeExpenseFormModal();
+    openListModal();
+    saveCloudData(); // 自動同步到雲端
+}
+
+function deleteExpenseItem(catIdx, itemIdx) {
+    if(confirm('確定要刪除這個支出項目嗎？')) {
+        currentData.pre_trip_expenses.categories[catIdx].items.splice(itemIdx, 1);
+        saveCloudData();
+        openListModal();
+    }
+}
+
+function openExpenseSummaryModal() {
+    document.getElementById('edit-exp-summary').value = currentData.pre_trip_expenses.summary.total_per_person || '';
+    document.getElementById('expense-summary-modal').classList.add('active');
+}
+
+function closeExpenseSummaryModal() {
+    document.getElementById('expense-summary-modal').classList.remove('active');
+}
+
+function saveExpenseSummary() {
+    currentData.pre_trip_expenses.summary.total_per_person = document.getElementById('edit-exp-summary').value;
+    closeExpenseSummaryModal();
+    openListModal();
+    saveCloudData(); // 自動同步到雲端
 }
 
 function closeListModal() { document.getElementById('list-modal').classList.remove('active'); }
