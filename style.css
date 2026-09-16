@@ -271,3 +271,57 @@ input:checked + .slider:before { transform: translateX(22px); }
 .slider.round { border-radius: 24px; }
 .slider.round:before { border-radius: 50%; }
 
+/* ================= 事前支出明細樣式 ================= */
+.expense-container {
+    background: white;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.expense-category-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: var(--swiss-red);
+    margin-bottom: 10px;
+    border-bottom: 2px solid var(--swiss-red);
+    padding-bottom: 5px;
+}
+.expense-table-wrapper {
+    overflow-x: auto; /* 讓表格在手機上可以左右滑動 */
+    -webkit-overflow-scrolling: touch;
+}
+.expense-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    white-space: nowrap;
+}
+.expense-table th, .expense-table td {
+    border: 1px solid var(--border-color);
+    padding: 8px;
+    text-align: left;
+}
+.expense-table th {
+    background-color: #F9F9F9;
+    color: #555;
+    font-weight: bold;
+}
+.expense-table td.wrap-text {
+    white-space: pre-wrap; /* 讓項目名稱可以換行 */
+    min-width: 180px;
+    line-height: 1.4;
+}
+.expense-total-row {
+    text-align: right;
+    font-weight: bold;
+    margin-top: 15px;
+    margin-bottom: 30px;
+    font-size: 16px;
+}
+.highlight-yellow {
+    background-color: #FFFF00;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #333;
+}
