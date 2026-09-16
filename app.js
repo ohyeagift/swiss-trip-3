@@ -193,16 +193,22 @@ function loadPreTripExpenses() {
         cat.items.forEach(item => {
             // 組合金額標籤
             let tags = '';
+            
+            // 1. 先顯示亞洲萬里通
+            if (item.asiamiles) tags += `<span class="val-tag">亞洲萬里通: ${item.asiamiles}</span>`;
+            
+            // 2. 再顯示總計
             if (item.total) {
                 // 根據類別名稱，自動切換「總計」的顯示文字
                 let totalLabel = "總計";
                 if (cat.title.includes('住宿')) totalLabel = "房價總計";
                 else if (cat.title.includes('交通')) totalLabel = "總計";
-                else if (cat.title.includes('景點')) totalLabel = "瑞郎";
+                else if (cat.title.includes('景點')) totalLabel = "CHF";
                 
                 tags += `<span class="val-tag">${totalLabel}: ${item.total}</span>`;
             }
-            if (item.asiamiles) tags += `<span class="val-tag">亞洲萬里通: ${item.asiamiles}</span>`;
+            
+            // 3. 其他項目
             if (item.per_night) tags += `<span class="val-tag">每晚: ${item.per_night}</span>`;
             if (item.per_person) tags += `<span class="val-tag highlight">每人: ${item.per_person}</span>`;
             
