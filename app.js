@@ -88,7 +88,7 @@ function renderTabs() {
     tabsContainer.innerHTML = '';
     currentData.daily_itinerary.forEach((day, index) => {
         const btn = document.createElement('button');
-        btn.className = `tab-btn ${index === 0 ? 'active' : ''}`;
+        btn.className = `tab-btn ${index === currentDayIndex && currentDayIndex !== 'expense' ? 'active' : ''}`;
         btn.innerText = day.day_id;
         btn.onclick = () => {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -97,11 +97,23 @@ function renderTabs() {
         };
         tabsContainer.appendChild(btn);
     });
+
+    // 加入「事前支出」按鈕
+    const expenseBtn = document.createElement('button');
+    expenseBtn.className = `tab-btn ${currentDayIndex === 'expense' ? 'active' : ''}`;
+    expenseBtn.innerText = "事前支出";
+    expenseBtn.onclick = () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        expenseBtn.classList.add('active');
+        loadPreTripExpenses();
+    };
+    tabsContainer.appendChild(expenseBtn);
 }
 
 // 6. 載入特定天數的資料
 async function loadDay(index) {
     currentDayIndex = index;
+    document.querySelector('.map-container').style.display = 'block';
     const dayData = currentData.daily_itinerary[index];
     document.getElementById('day-title').innerText = `${dayData.day_id} · ${dayData.date} | ${dayData.route_title}`;
     const timelineContainer = document.getElementById('timeline-container');
@@ -164,6 +176,55 @@ async function loadDay(index) {
     });
     updateMapMarkers(dayData);
 }
+// --- 新增：載入事前支出明細 ---
+function loadPreTripExpenses() {
+    currentDayIndex = 'expense';
+    document.querySelector('.map-container').style.display = 'none'; // 隱藏地圖，騰出空間
+    document.getElementById('day-title').innerText = "事前支出明細";
+    
+    const timelineContainer = document.getElementById('timeline-container');
+    timelineContainer.innerHTML = '';
+
+    if (!currentData.pre_trip_expenses) return;
+
+    let html = '';
+    currentData.pre_trip_expenses.categories.forEach(cat => {
+        let tableRows = '';
+        cat.items.forEach(item => {
+            tableRows += `
+                <tr>
+                    <td class="wrap-text">${item.name}</td>
+                    ${item.note !== undefined ? `<td>${item.note}</td>` : ''}
+                    <td>${item.total}</td>
+                    <td>${item.per_person}</td>
+                    ${item.per_night !== undefined ? `<td>${item.per_night}</td>` : ''}
+                </tr>
+            `;
+        });
+
+        let ths = cat.columns.map(col => `<th>${col}</th>`).join('');
+
+        html += `
+            <div class="expense-container">
+                <div class="expense-category-title">${cat.title}</div>
+                <div class="expense-table-wrapper">
+                    <table class="expense-table">
+                        <thead><tr>${ths}</tr></thead>
+                        <tbody>${tableRows}</tbody>
+                    </table>
+                </div>
+            </div>
+        `;
+    });
+
+    html += `
+        <div class="expense-total-row">
+            總計每人事前支出：<span class="highlight-yellow">HK$${currentData.pre_trip_expenses.summary.total_per_person}</span>
+        </div>
+    `;
+
+    timelineContainer.innerHTML = html;
+}
 
 // 7. 更新地圖標記
 async function updateMapMarkers(dayData) {
@@ -217,6 +278,10 @@ function checkPasswordAndOpen() {
 }
 
 function openListModal() {
+        if (currentDayIndex === 'expense') {
+        alert("事前支出明細請直接在 JSONBin 後台修改資料。");
+        return;
+    }
     const dayData = currentData.daily_itinerary[currentDayIndex];
     document.getElementById('modal-day-title').innerText = `編輯 ${dayData.day_id} 行程`;
     const container = document.getElementById('edit-list-container');
