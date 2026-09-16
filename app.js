@@ -176,7 +176,7 @@ async function loadDay(index) {
     });
     updateMapMarkers(dayData);
 }
-// --- 新增：載入事前支出明細 ---
+// --- 新增：載入事前支出明細 (Mobile First 列表版) ---
 function loadPreTripExpenses() {
     currentDayIndex = 'expense';
     document.querySelector('.map-container').style.display = 'none'; // 隱藏地圖，騰出空間
@@ -189,29 +189,27 @@ function loadPreTripExpenses() {
 
     let html = '';
     currentData.pre_trip_expenses.categories.forEach(cat => {
-        let tableRows = '';
+        let itemsHtml = '';
         cat.items.forEach(item => {
-            tableRows += `
-                <tr>
-                    <td class="wrap-text">${item.name}</td>
-                    ${item.note !== undefined ? `<td>${item.note}</td>` : ''}
-                    <td>${item.total}</td>
-                    <td>${item.per_person}</td>
-                    ${item.per_night !== undefined ? `<td>${item.per_night}</td>` : ''}
-                </tr>
+            // 組合金額標籤 (移除 note 備註)
+            let tags = '';
+            if (item.total) tags += `<span class="val-tag">總計: ${item.total}</span>`;
+            if (item.per_person) tags += `<span class="val-tag highlight">每人: ${item.per_person}</span>`;
+            if (item.per_night) tags += `<span class="val-tag">每晚: ${item.per_night}</span>`;
+            
+            itemsHtml += `
+                <div class="expense-row">
+                    <div class="expense-name">${item.name}</div>
+                    <div class="expense-vals">${tags}</div>
+                </div>
             `;
         });
-
-        let ths = cat.columns.map(col => `<th>${col}</th>`).join('');
 
         html += `
             <div class="expense-container">
                 <div class="expense-category-title">${cat.title}</div>
-                <div class="expense-table-wrapper">
-                    <table class="expense-table">
-                        <thead><tr>${ths}</tr></thead>
-                        <tbody>${tableRows}</tbody>
-                    </table>
+                <div class="expense-list">
+                    ${itemsHtml}
                 </div>
             </div>
         `;
@@ -219,7 +217,9 @@ function loadPreTripExpenses() {
 
     html += `
         <div class="expense-total-row">
-            總計每人事前支出：<span class="highlight-yellow">HK$${currentData.pre_trip_expenses.summary.total_per_person}</span>
+            總計每人事前支出：  
+
+            <span class="highlight-yellow" style="font-size: 20px; display: inline-block; margin-top: 8px;">HK$${currentData.pre_trip_expenses.summary.total_per_person}</span>
         </div>
     `;
 
