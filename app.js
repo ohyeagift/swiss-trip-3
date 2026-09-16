@@ -485,17 +485,28 @@ const travelData = {
     ]
 };
 
-// 2. 全局變數與資料初始化 (使用 _v3 徹底清除舊暫存)
-let currentData = JSON.parse(localStorage.getItem('swissTravelData_v4')) || travelData;
+// 2. 全局變數與資料初始化 (使用 _v5 確保讀取新設定)
+let currentData = JSON.parse(localStorage.getItem('swissTravelData_v5')) || travelData;
+if (currentData.requireViewPassword === undefined) {
+    currentData.requireViewPassword = true; // 預設開啟觀看密碼
+}
+
 let map;
 let markers = [];
 let currentDayIndex = 0;
 let editingActivityIndex = null;
-let editingAccKey = null; // 記錄正在編輯的住宿
-let isAuthenticated = false; // 密碼驗證狀態
+let editingAccKey = null; 
+let isAuthenticated = false; // 編輯密碼狀態
+let isViewAuthenticated = false; // 觀看密碼狀態
 
-// 3. 初始化 Google Maps
+// 3. 初始化 Google Maps 與 觀看密碼檢查
 async function initMap() {
+    // 如果開啟了觀看密碼，且還沒驗證過，就顯示密碼畫面並暫停載入
+    if (currentData.requireViewPassword && !isViewAuthenticated) {
+        document.getElementById('password-overlay').style.display = 'flex';
+        return; 
+    }
+
     const { Map } = await google.maps.importLibrary("maps");
     
     map = new Map(document.getElementById("map"), {
@@ -508,6 +519,18 @@ async function initMap() {
 
     renderTabs();
     loadDay(0);
+}
+
+// 驗證觀看密碼
+function verifyViewPassword() {
+    const pwd = document.getElementById('view-pwd-input').value;
+    if (pwd === '1016') {
+        document.getElementById('password-overlay').style.display = 'none';
+        isViewAuthenticated = true;
+        initMap(); // 密碼正確，繼續載入地圖與行程
+    } else {
+        alert('密碼錯誤！提示：出發日期 (4碼數字)');
+    }
 }
 
 // 4. 渲染導航 Tabs
@@ -528,7 +551,7 @@ function renderTabs() {
     });
 }
 
-// 5. 載入特定天數的資料 (更新時間軸與地圖)
+// 5. 載入特定天數的資料
 async function loadDay(index) {
     currentDayIndex = index;
     const dayData = currentData.daily_itinerary[index];
@@ -539,7 +562,7 @@ async function loadDay(index) {
     timelineContainer.innerHTML = '';
 
     // --- 1. 先加入住宿卡片 (置頂) ---
-        if (dayData.accommodation && currentData.accommodations[dayData.accommodation] && !dayData.hide_acc_card) {
+    if (dayData.accommodation && currentData.accommodations[dayData.accommodation] && !dayData.hide_acc_card) {
         const acc = currentData.accommodations[dayData.accommodation];
         let accLinksHtml = '';
         
@@ -581,7 +604,6 @@ async function loadDay(index) {
             if (act.links.other) linksHtml += `<a href="${act.links.other}" target="_blank" class="link-btn">🔗 其他</a>`;
         }
 
-        // 【防錯設計】把換行處理獨立拿出來寫，絕對不會再報錯！
         let altitudeHtml = '';
         if (act.altitude) {
             const formattedText = act.altitude.replace(/\n/g, '<br>');
@@ -631,6 +653,7 @@ async function updateMapMarkers(dayData) {
         }
     });
 
+    // 這裡拿掉了 !dayData.hide_acc_card，所以 DAY 11 依然會有綠色屋仔！
     if (dayData.accommodation && currentData.accommodations[dayData.accommodation]) {
         const acc = currentData.accommodations[dayData.accommodation];
         if (acc.lat && acc.lng) {
@@ -660,7 +683,7 @@ async function updateMapMarkers(dayData) {
 
 // ================= 編輯與匯出功能邏輯 =================
 
-// 0. 密碼驗證
+// 0. 密碼驗證 (編輯密碼)
 function checkPasswordAndOpen() {
     if (isAuthenticated) {
         openListModal();
@@ -683,8 +706,23 @@ function openListModal() {
     const container = document.getElementById('edit-list-container');
     container.innerHTML = '';
 
+    // 加入「觀看密碼開關」
+    const isChecked = currentData.requireViewPassword ? 'checked' : '';
+    container.innerHTML += `
+        <div class="edit-list-item" style="background: #FFF3E0; border-color: #FFE0B2; margin-bottom: 15px;">
+            <div class="edit-list-info">
+                <div class="n" style="color: #E65100;">🔒 啟用觀看密碼 (1016)</div>
+                <div class="t">開啟後，朋友需輸入密碼才能看行程</div>
+            </div>
+            <label class="switch">
+                <input type="checkbox" id="pwd-toggle" ${isChecked} onchange="toggleViewPassword()">
+                <span class="slider round"></span>
+            </label>
+        </div>
+    `;
+
     // 加入編輯住宿的按鈕 (置頂)
-    if (dayData.accommodation && currentData.accommodations[dayData.accommodation]) {
+    if (dayData.accommodation && currentData.accommodations[dayData.accommodation] && !dayData.hide_acc_card) {
         const accName = currentData.accommodations[dayData.accommodation].name;
         container.innerHTML += `
             <div class="edit-list-item" style="background: #E8F5E9; border-color: #C8E6C9;">
@@ -721,11 +759,17 @@ function closeListModal() {
     document.getElementById('list-modal').classList.remove('active');
 }
 
+// 切換觀看密碼狀態
+function toggleViewPassword() {
+    currentData.requireViewPassword = document.getElementById('pwd-toggle').checked;
+    localStorage.setItem('swissTravelData_v5', JSON.stringify(currentData));
+}
+
 // 2. 刪除行程
 function deleteActivity(index) {
     if(confirm('確定要刪除這個行程嗎？')) {
         currentData.daily_itinerary[currentDayIndex].activities.splice(index, 1);
-        localStorage.setItem('swissTravelData_v4', JSON.stringify(currentData));
+        localStorage.setItem('swissTravelData_v5', JSON.stringify(currentData));
         openListModal();
         loadDay(currentDayIndex);
     }
@@ -817,7 +861,7 @@ function saveActivity() {
     if(Object.keys(act.links).length === 0) delete act.links;
     
     sortActivities(activities);
-    localStorage.setItem('swissTravelData_v4', JSON.stringify(currentData));
+    localStorage.setItem('swissTravelData_v5', JSON.stringify(currentData));
     closeFormModal();
     openListModal();
     loadDay(currentDayIndex);
@@ -858,7 +902,7 @@ function saveAccommodation() {
     if(!acc.website) delete acc.website;
     if(!acc.other) delete acc.other;
     
-    localStorage.setItem('swissTravelData_v4', JSON.stringify(currentData));
+    localStorage.setItem('swissTravelData_v5', JSON.stringify(currentData));
     closeAccFormModal();
     openListModal();
     loadDay(currentDayIndex);
