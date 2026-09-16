@@ -197,6 +197,8 @@ function loadPreTripExpenses() {
                 // 根據類別名稱，自動切換「總計」的顯示文字
                 let totalLabel = "總計";
                 if (cat.title.includes('住宿')) totalLabel = "房價總計";
+                else if (cat.title.includes('交通')) totalLabel = "HKD Total";
+                else if (cat.title.includes('景點')) totalLabel = "CHF Total";
                 
                 tags += `<span class="val-tag">${totalLabel}: ${item.total}</span>`;
             }
