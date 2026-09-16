@@ -194,8 +194,8 @@ function loadPreTripExpenses() {
             // 組合金額標籤 (移除 note 備註)
             let tags = '';
             if (item.total) tags += `<span class="val-tag">房價總計: ${item.total}</span>`;
-            if (item.per_person) tags += `<span class="val-tag highlight">每人: ${item.per_person}</span>`;
             if (item.per_night) tags += `<span class="val-tag">每晚: ${item.per_night}</span>`;
+            if (item.per_person) tags += `<span class="val-tag highlight">每人: ${item.per_person}</span>`;
             
             itemsHtml += `
                 <div class="expense-row">
