@@ -168,6 +168,64 @@
         </div>
     </div>
 
+    <!-- 4. 編輯支出項目 Modal -->
+    <div id="expense-form-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="close-btn" onclick="closeExpenseFormModal()">✕</button>
+                <h3>編輯支出項目</h3>
+                <div style="width: 24px;"></div>
+            </div>
+            <div class="modal-body form-body">
+                <div class="form-group">
+                    <label>項目名稱 (可按 Enter 換行)</label>
+                    <textarea id="edit-exp-name" rows="2"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>總計 (如: HK$14,004.00 或 42)</label>
+                    <input type="text" id="edit-exp-total">
+                </div>
+                <div class="form-group">
+                    <label>每人 (如: HK$3,501.00)</label>
+                    <input type="text" id="edit-exp-person">
+                </div>
+                <div class="form-group">
+                    <label>每晚 (選填，如: HK$1,011.34)</label>
+                    <input type="text" id="edit-exp-night">
+                </div>
+                <div class="form-group">
+                    <label>亞洲萬里通 (選填，如: 54000積分)</label>
+                    <input type="text" id="edit-exp-miles">
+                </div>
+            </div>
+            <div class="modal-footer double-btn">
+                <button class="btn-secondary" onclick="closeExpenseFormModal()">取消</button>
+                <button class="btn-primary" onclick="saveExpenseItem()">完成</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. 編輯總計金額 Modal -->
+    <div id="expense-summary-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="close-btn" onclick="closeExpenseSummaryModal()">✕</button>
+                <h3>編輯總計金額</h3>
+                <div style="width: 24px;"></div>
+            </div>
+            <div class="modal-body form-body">
+                <div class="form-group">
+                    <label>總計每人支出 (如: 20,386.38)</label>
+                    <input type="text" id="edit-exp-summary">
+                </div>
+            </div>
+            <div class="modal-footer double-btn">
+                <button class="btn-secondary" onclick="closeExpenseSummaryModal()">取消</button>
+                <button class="btn-primary" onclick="saveExpenseSummary()">完成</button>
+            </div>
+        </div>
+    </div>
+   
     <script src="app.js"></script>
 </body>
 </html>
