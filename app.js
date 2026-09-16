@@ -202,6 +202,7 @@ function loadPreTripExpenses() {
                 
                 tags += `<span class="val-tag">${totalLabel}: ${item.total}</span>`;
             }
+            if (item.asiamiles) tags += `<span class="val-tag">亞洲萬里通: ${item.asiamiles}</span>`;
             if (item.per_night) tags += `<span class="val-tag">每晚: ${item.per_night}</span>`;
             if (item.per_person) tags += `<span class="val-tag highlight">每人: ${item.per_person}</span>`;
             
