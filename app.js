@@ -101,7 +101,7 @@ function renderTabs() {
     // 加入「事前支出」按鈕
     const expenseBtn = document.createElement('button');
     expenseBtn.className = `tab-btn ${currentDayIndex === 'expense' ? 'active' : ''}`;
-    expenseBtn.innerText = "事前支出";
+    expenseBtn.innerText = "支出明細";
     expenseBtn.onclick = () => {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         expenseBtn.classList.add('active');
@@ -197,8 +197,8 @@ function loadPreTripExpenses() {
                 // 根據類別名稱，自動切換「總計」的顯示文字
                 let totalLabel = "總計";
                 if (cat.title.includes('住宿')) totalLabel = "房價總計";
-                else if (cat.title.includes('交通')) totalLabel = "HKD Total";
-                else if (cat.title.includes('景點')) totalLabel = "CHF Total";
+                else if (cat.title.includes('交通')) totalLabel = "總計";
+                else if (cat.title.includes('景點')) totalLabel = "瑞郎";
                 
                 tags += `<span class="val-tag">${totalLabel}: ${item.total}</span>`;
             }
@@ -225,7 +225,7 @@ function loadPreTripExpenses() {
 
     html += `
         <div class="expense-total-row">
-            機票、酒店、交通、門票每人總計：
+            機票、酒店、交通、景點每人總計：
             <span class="highlight-yellow" style="font-size: 20px; display: inline-block; margin-top: 8px;">HK$${currentData.pre_trip_expenses.summary.total_per_person}</span>
         </div>
     `;
