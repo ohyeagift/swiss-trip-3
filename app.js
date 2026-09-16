@@ -217,7 +217,7 @@ function loadPreTripExpenses() {
 
     html += `
         <div class="expense-total-row">
-            總計每人事前支出：  
+            總計：  
 
             <span class="highlight-yellow" style="font-size: 20px; display: inline-block; margin-top: 8px;">HK$${currentData.pre_trip_expenses.summary.total_per_person}</span>
         </div>
