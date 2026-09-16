@@ -298,11 +298,28 @@ function openListModal() {
     const container = document.getElementById('edit-list-container');
     container.innerHTML = '';
 
+    // --- 密碼開關 (所有頁面共用) ---
+    const isChecked = currentData.requireViewPassword ? 'checked' : '';
+    const pwdToggleHtml = `
+        <div class="edit-list-item" style="background: #FFF3E0; border-color: #FFE0B2; margin-bottom: 15px;">
+            <div class="edit-list-info">
+                <div class="n" style="color: #E65100;">🔒 啟用觀看密碼 (1016)</div>
+                <div class="t">開啟後，朋友需輸入密碼才能看行程</div>
+            </div>
+            <label class="switch">
+                <input type="checkbox" id="pwd-toggle" ${isChecked} onchange="toggleViewPassword()">
+                <span class="slider round"></span>
+            </label>
+        </div>
+    `;
+
     if (currentDayIndex === 'expense') {
         // --- 編輯支出明細模式 ---
         document.getElementById('modal-day-title').innerText = `編輯 支出明細`;
-        document.querySelector('#list-modal .add-btn').style.display = 'none'; // 隱藏原本的新增按鈕
+        document.querySelector('#list-modal .add-btn').style.display = 'none'; 
         document.querySelector('#list-modal .sort-hint').style.display = 'none';
+
+        container.innerHTML += pwdToggleHtml; // 加入密碼開關
 
         // 1. 總計區塊
         container.innerHTML += `
@@ -335,7 +352,6 @@ function openListModal() {
                     </div>
                 `;
             });
-            // 每個類別下方加入專屬的新增按鈕
             container.innerHTML += `<button class="btn-secondary add-btn" style="margin-top: 5px; display: block; width: 100%;" onclick="openExpenseFormModal(${cIdx}, null)">+ 新增 ${cat.title.split(' ')[1] || '項目'}</button>`;
         });
 
@@ -347,19 +363,7 @@ function openListModal() {
         const dayData = currentData.daily_itinerary[currentDayIndex];
         document.getElementById('modal-day-title').innerText = `編輯 ${dayData.day_id} 行程`;
         
-        const isChecked = currentData.requireViewPassword ? 'checked' : '';
-        container.innerHTML += `
-            <div class="edit-list-item" style="background: #FFF3E0; border-color: #FFE0B2; margin-bottom: 15px;">
-                <div class="edit-list-info">
-                    <div class="n" style="color: #E65100;">🔒 啟用觀看密碼 (1016)</div>
-                    <div class="t">開啟後，朋友需輸入密碼才能看行程</div>
-                </div>
-                <label class="switch">
-                    <input type="checkbox" id="pwd-toggle" ${isChecked} onchange="toggleViewPassword()">
-                    <span class="slider round"></span>
-                </label>
-            </div>
-        `;
+        container.innerHTML += pwdToggleHtml; // 加入密碼開關
 
         if (dayData.accommodation && currentData.accommodations[dayData.accommodation] && !dayData.hide_acc_card) {
             const accName = currentData.accommodations[dayData.accommodation].name;
@@ -394,6 +398,7 @@ function openListModal() {
     
     document.getElementById('list-modal').classList.add('active');
 }
+
 
 // --- 新增：支出明細的編輯功能 ---
 function openExpenseFormModal(catIdx, itemIdx) {
