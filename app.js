@@ -149,10 +149,13 @@ async function loadDay(index) {
             const searchQuery = encodeURIComponent(act.query);
             linksHtml += `<a href="https://www.google.com/maps/search/?api=1&query=${searchQuery}" target="_blank" class="link-btn">📍 地圖</a>`;
         }
-        if (act.links ) {
+       if (act.links) {
             if (act.links.website) linksHtml += `<a href="${act.links.website}" target="_blank" class="link-btn">🌐 官網</a>`;
+            if (act.links.transit_map) linksHtml += `<a href="${act.links.transit_map}" target="_blank" class="link-btn">🗺️ 交通圖</a>`;
+            if (act.links.sbb) linksHtml += `<a href="${act.links.sbb}" target="_blank" class="link-btn">🚆 SBB</a>`;
             if (act.links.webcam) linksHtml += `<a href="${act.links.webcam}" target="_blank" class="link-btn">📷 攝影機</a>`;
             if (act.links.weather) linksHtml += `<a href="${act.links.weather}" target="_blank" class="link-btn">🌤️ 天氣</a>`;
+            if (act.links.blogger) linksHtml += `<a href="${act.links.blogger}" target="_blank" class="link-btn">📝 Blogger</a>`;
             if (act.links.other) linksHtml += `<a href="${act.links.other}" target="_blank" class="link-btn">🔗 其他</a>`;
         }
 
@@ -496,8 +499,11 @@ function openNewFormModal() {
     document.getElementById('edit-lat').value = '';
     document.getElementById('edit-lng').value = '';
     document.getElementById('edit-website').value = '';
+    document.getElementById('edit-transit-map').value = '';
+    document.getElementById('edit-sbb').value = '';
     document.getElementById('edit-webcam').value = '';
     document.getElementById('edit-weather').value = '';
+    document.getElementById('edit-blogger').value = '';
     document.getElementById('edit-other').value = '';
     document.getElementById('form-modal').classList.add('active');
 }
@@ -512,8 +518,11 @@ function openFormModal(activityIndex) {
     document.getElementById('edit-lat').value = act.lat || '';
     document.getElementById('edit-lng').value = act.lng || '';
     document.getElementById('edit-website').value = (act.links && act.links.website) ? act.links.website : '';
+    document.getElementById('edit-transit-map').value = (act.links && act.links.transit_map) ? act.links.transit_map : '';
+    document.getElementById('edit-sbb').value = (act.links && act.links.sbb) ? act.links.sbb : '';
     document.getElementById('edit-webcam').value = (act.links && act.links.webcam) ? act.links.webcam : '';
     document.getElementById('edit-weather').value = (act.links && act.links.weather) ? act.links.weather : '';
+    document.getElementById('edit-blogger').value = (act.links && act.links.blogger) ? act.links.blogger : '';
     document.getElementById('edit-other').value = (act.links && act.links.other) ? act.links.other : '';
     document.getElementById('form-modal').classList.add('active');
 }
@@ -555,13 +564,19 @@ function saveActivity() {
     
     if (!act.links) act.links = {};
     act.links.website = document.getElementById('edit-website').value;
+    act.links.transit_map = document.getElementById('edit-transit-map').value;
+    act.links.sbb = document.getElementById('edit-sbb').value;
     act.links.webcam = document.getElementById('edit-webcam').value;
     act.links.weather = document.getElementById('edit-weather').value;
+    act.links.blogger = document.getElementById('edit-blogger').value;
     act.links.other = document.getElementById('edit-other').value;
     
     if(!act.links.website) delete act.links.website;
+    if(!act.links.transit_map) delete act.links.transit_map;
+    if(!act.links.sbb) delete act.links.sbb;
     if(!act.links.webcam) delete act.links.webcam;
     if(!act.links.weather) delete act.links.weather;
+    if(!act.links.blogger) delete act.links.blogger;
     if(!act.links.other) delete act.links.other;
     if(Object.keys(act.links).length === 0) delete act.links;
     
