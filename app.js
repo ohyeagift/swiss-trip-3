@@ -644,55 +644,39 @@ function saveAccommodation() {
 let scrollObserver = null;
 
 function setupScrollTracking() {
-    // 如果之前有觀察器，先清除
-    if (scrollObserver) {
-        scrollObserver.disconnect();
-    }
-
+    if (scrollObserver) scrollObserver.disconnect();
     const container = document.getElementById('timeline-container');
-    
-    // 設定觸發範圍：當卡片滑動到容器的「中上方」時觸發
-    const options = {
-        root: container,
-        rootMargin: '-20% 0px -60% 0px', 
-        threshold: 0
-    };
+    const options = { root: container, rootMargin: '-20% 0px -60% 0px', threshold: 0 };
 
     scrollObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 const lat = parseFloat(entry.target.getAttribute('data-lat'));
                 const lng = parseFloat(entry.target.getAttribute('data-lng'));
-                
-                // 如果該行程有經緯度，就平移地圖並縮放
                 if (!isNaN(lat) && !isNaN(lng) && map) {
                     map.panTo({ lat: lat, lng: lng });
-                    map.setZoom(15); // 15 是一個適合看清楚周邊街道的縮放級別
+                    map.setZoom(15);
                 }
             }
         });
     }, options);
 
-    // 綁定所有帶有 scroll-track 類別的卡片
-    document.querySelectorAll('.scroll-track').forEach(el => {
-        scrollObserver.observe(el);
-    });
+    document.querySelectorAll('.scroll-track').forEach(el => scrollObserver.observe(el));
 }
+
 // ================= 天氣與攝影機整合功能 =================
 function loadWeatherWebcam() {
     currentDayIndex = 'weather';
-    document.querySelector('.map-container').style.display = 'none'; // 隱藏地圖
+    document.querySelector('.map-container').style.display = 'none';
     document.getElementById('day-title').innerText = "即時天氣與攝影機";
     
     const timelineContainer = document.getElementById('timeline-container');
     timelineContainer.innerHTML = '<div style="text-align:center; padding: 20px; color: #666;">資料整理中...</div>';
 
-    // 1. 收集所有包含攝影機或天氣連結的景點
     const locations = [];
     currentData.daily_itinerary.forEach(day => {
         day.activities.forEach(act => {
             if (act.links && (act.links.webcam || act.links.weather)) {
-                // 避免同一個景點重複出現
                 if (!locations.find(l => l.name === act.activity)) {
                     locations.push({
                         name: act.activity,
@@ -713,7 +697,6 @@ function loadWeatherWebcam() {
         return;
     }
 
-    // 2. 產生 HTML 結構
     let html = '<div class="weather-grid">';
     locations.forEach((loc, idx) => {
         let buttonsHtml = '';
@@ -733,7 +716,6 @@ function loadWeatherWebcam() {
     html += '</div>';
     timelineContainer.innerHTML = html;
 
-    // 3. 呼叫免費天氣 API (Open-Meteo) 取得即時氣溫
     locations.forEach(async (loc, idx) => {
         if (loc.lat && loc.lng) {
             try {
@@ -754,7 +736,6 @@ function loadWeatherWebcam() {
     });
 }
 
-// 將 WMO 天氣代碼轉換為圖示與文字
 function getWeatherDescription(code) {
     if (code === 0) return { icon: '☀️', text: '晴天' };
     if (code === 1 || code === 2 || code === 3) return { icon: '⛅', text: '多雲' };
