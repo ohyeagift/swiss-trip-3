@@ -375,6 +375,6 @@ input:checked + .slider:before { transform: translateX(22px); }
     
 /* 限制地圖在平板/電腦上的高度，保留更多空間給行程 */
     .map-container { 
-        height: 30vh; 
+        height: 25vh; 
         max-height: 300px; 
     }
