@@ -37,7 +37,7 @@ body {
 
 /* --- 地圖區 --- */
 .map-container {
-    height: 35vh;
+    height: 30vh;
     flex-shrink: 0;
     background-color: #e5e3df;
 }
@@ -373,6 +373,8 @@ input:checked + .slider:before { transform: translateX(22px); }
     .expense-total-row { font-size: 20px; }
     .expense-total-row .highlight-yellow { font-size: 24px !important; }
     
-    /* 讓地圖在平板/電腦上稍微高一點，視覺比例更好 */
-    .map-container { height: 45vh; }
-}
+/* 限制地圖在平板/電腦上的高度，保留更多空間給行程 */
+    .map-container { 
+        height: 30vh; 
+        max-height: 300px; 
+    }
