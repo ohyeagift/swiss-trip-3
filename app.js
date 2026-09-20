@@ -312,7 +312,7 @@ let editingExpItemIndex = null;
 function openListModal() {
     // 1. 防錯：如果是天氣頁面，不允許編輯，跳出提示
     if (currentDayIndex === 'weather') {
-        alert("天氣與攝影機是自動從行程中抓取的，請到對應的每日行程中編輯連結！");
+        alert("天氣與攝影機是自動從行程中抓取的，請編輯連結！");
         return;
     }
 
@@ -702,7 +702,7 @@ function loadWeatherWebcam() {
             buttonsHtml += '<a href="' + loc.webcam + '" target="_blank" class="link-btn">📷 攝影機</a>';
         }
         if (loc.weatherLink) {
-            buttonsHtml += '<a href="' + loc.weatherLink + '" target="_blank" class="link-btn">🌤️ 官方天氣</a>';
+            buttonsHtml += '<a href="' + loc.weatherLink + '" target="_blank" class="link-btn">🌤️ 天氣</a>';
         }
 
         let liveWeatherHtml = '<div class="live-weather" style="color:#999;">無座標資料，無法讀取天氣</div>';
