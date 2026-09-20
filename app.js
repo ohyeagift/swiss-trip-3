@@ -700,18 +700,25 @@ function loadWeatherWebcam() {
     let html = '<div class="weather-grid">';
     locations.forEach((loc, idx) => {
         let buttonsHtml = '';
-        if (loc.webcam) buttonsHtml += `<a href="${loc.webcam}" target="_blank" class="link-btn">📷 攝影機</a>`;
-        if (loc.weatherLink) buttonsHtml += `<a href="${loc.weatherLink}" target="_blank" class="link-btn">🌤️ 官方天氣</a>`;
+        if (loc.webcam) {
+            buttonsHtml += '<a href="' + loc.webcam + '" target="_blank" class="link-btn">📷 攝影機</a>';
+        }
+        if (loc.weatherLink) {
+            buttonsHtml += '<a href="' + loc.weatherLink + '" target="_blank" class="link-btn">🌤️ 官方天氣</a>';
+        }
 
-        html += `
-            <div class="weather-card">
-                <div class="weather-header">
-                    <div class="weather-title">${loc.name}</div>
-                    <div class="weather-actions">${buttonsHtml}</div>
-                </div>
-                ${loc.lat && loc.lng ? `<div class="live-weather" id="live-weather-${idx}">讀取即時天氣中...</div>` : '<div class="live-weather" style="color:#999;">無座標資料，無法讀取天氣</div>'}
-            </div>
-        `;
+        let liveWeatherHtml = '<div class="live-weather" style="color:#999;">無座標資料，無法讀取天氣</div>';
+        if (loc.lat && loc.lng) {
+            liveWeatherHtml = '<div class="live-weather" id="live-weather-' + idx + '">讀取即時天氣中...</div>';
+        }
+
+        html += '<div class="weather-card">';
+        html += '  <div class="weather-header">';
+        html += '    <div class="weather-title">' + loc.name + '</div>';
+        html += '    <div class="weather-actions">' + buttonsHtml + '</div>';
+        html += '  </div>';
+        html += '  ' + liveWeatherHtml;
+        html += '</div>';
     });
     html += '</div>';
     timelineContainer.innerHTML = html;
@@ -719,18 +726,15 @@ function loadWeatherWebcam() {
     locations.forEach(async (loc, idx) => {
         if (loc.lat && loc.lng) {
             try {
-                const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lng}&current=temperature_2m,weather_code&timezone=auto` );
+                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=' + loc.lat + '&longitude=' + loc.lng + '&current=temperature_2m,weather_code&timezone=auto' );
                 const data = await res.json();
                 const temp = data.current.temperature_2m;
                 const code = data.current.weather_code;
                 const weatherInfo = getWeatherDescription(code);
                 
-                document.getElementById(`live-weather-${idx}`).innerHTML = `
-                    <div class="weather-temp">${temp}°C</div>
-                    <div class="weather-desc">${weatherInfo.icon} ${weatherInfo.text}</div>
-                `;
+                document.getElementById('live-weather-' + idx).innerHTML = '<div class="weather-temp">' + temp + '°C</div><div class="weather-desc">' + weatherInfo.icon + ' ' + weatherInfo.text + '</div>';
             } catch (e) {
-                document.getElementById(`live-weather-${idx}`).innerHTML = `<span style="color:#999;">無法取得即時天氣</span>`;
+                document.getElementById('live-weather-' + idx).innerHTML = '<span style="color:#999;">無法取得即時天氣</span>';
             }
         }
     });
