@@ -130,7 +130,7 @@ async function loadDay(index) {
         if (acc.other) accLinksHtml += `<a href="${acc.other}" target="_blank" class="link-btn">🔗 其他</a>`;
 
         timelineContainer.innerHTML += `
-            <div class="accommodation-card">
+                <div class="accommodation-card scroll-track" data-lat="${acc.lat || ''}" data-lng="${acc.lng || ''}">
                 <div class="acc-left">
                     <div class="acc-icon">🏠</div>
                     <div>
@@ -166,7 +166,7 @@ async function loadDay(index) {
         }
 
         timelineContainer.innerHTML += `
-            <div class="timeline-item">
+            <div class="timeline-item scroll-track" data-lat="${act.lat || ''}" data-lng="${act.lng || ''}">
                 <div class="time">${act.time}</div>
                 <div class="marker-icon">${i + 1}</div>
                 <div class="content">
@@ -178,6 +178,7 @@ async function loadDay(index) {
         `;
     });
     updateMapMarkers(dayData);
+    setTimeout(setupScrollTracking, 800); // 延遲 0.8 秒後啟動滑動追蹤
 }
 // --- 新增：載入事前支出明細 (Mobile First 列表版) ---
 function loadPreTripExpenses() {
@@ -621,4 +622,43 @@ function saveAccommodation() {
     closeAccFormModal();
     openListModal();
     saveCloudData(); // 儲存到雲端
+}
+
+// ================= 滑動聯動地圖功能 =================
+let scrollObserver = null;
+
+function setupScrollTracking() {
+    // 如果之前有觀察器，先清除
+    if (scrollObserver) {
+        scrollObserver.disconnect();
+    }
+
+    const container = document.getElementById('timeline-container');
+    
+    // 設定觸發範圍：當卡片滑動到容器的「中上方」時觸發
+    const options = {
+        root: container,
+        rootMargin: '-20% 0px -60% 0px', 
+        threshold: 0
+    };
+
+    scrollObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const lat = parseFloat(entry.target.getAttribute('data-lat'));
+                const lng = parseFloat(entry.target.getAttribute('data-lng'));
+                
+                // 如果該行程有經緯度，就平移地圖並縮放
+                if (!isNaN(lat) && !isNaN(lng) && map) {
+                    map.panTo({ lat: lat, lng: lng });
+                    map.setZoom(15); // 15 是一個適合看清楚周邊街道的縮放級別
+                }
+            }
+        });
+    }, options);
+
+    // 綁定所有帶有 scroll-track 類別的卡片
+    document.querySelectorAll('.scroll-track').forEach(el => {
+        scrollObserver.observe(el);
+    });
 }
