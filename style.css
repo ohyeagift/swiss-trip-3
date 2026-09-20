@@ -346,3 +346,33 @@ input:checked + .slider:before { transform: translateX(22px); }
     border-radius: 4px;
     color: #333;
 }
+/* ================= 響應式設計 (平板與電腦版自動放大) ================= */
+@media (min-width: 768px) {
+    /* 頂部資訊 */
+    .trip-title { font-size: 26px; }
+    .trip-dates { font-size: 14px; }
+    .day-title { font-size: 20px; }
+    
+    /* 導航按鈕 */
+    .tab-btn { font-size: 16px; padding: 8px 20px; }
+    
+    /* 行程時間軸 */
+    .time { font-size: 16px; width: 100px; } /* 字變大，時間欄位也要稍微加寬 */
+    .activity-name { font-size: 20px; }
+    .altitude { font-size: 15px; }
+    .link-btn { font-size: 14px; padding: 6px 12px; }
+    
+    /* 住宿卡片 */
+    .acc-title { font-size: 14px; }
+    .acc-name { font-size: 18px; }
+    
+    /* 支出明細 */
+    .expense-category-title { font-size: 20px; }
+    .expense-name { font-size: 18px; }
+    .val-tag { font-size: 14px; padding: 6px 10px; }
+    .expense-total-row { font-size: 20px; }
+    .expense-total-row .highlight-yellow { font-size: 24px !important; }
+    
+    /* 讓地圖在平板/電腦上稍微高一點，視覺比例更好 */
+    .map-container { height: 45vh; }
+}
