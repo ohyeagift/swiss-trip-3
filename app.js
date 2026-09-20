@@ -691,9 +691,7 @@ function loadWeatherWebcam() {
     });
 
     if (locations.length === 0) {
-        timelineContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: #666;">目前行程中沒有包含攝影機或天氣連結的景點。  
-  
-請在編輯行程時加入連結。</div>';
+        timelineContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: #666;">目前行程中沒有包含攝影機或天氣連結的景點。<br>請在編輯行程時加入連結。</div>';
         return;
     }
 
