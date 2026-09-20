@@ -88,7 +88,7 @@ function renderTabs() {
     tabsContainer.innerHTML = '';
     currentData.daily_itinerary.forEach((day, index) => {
         const btn = document.createElement('button');
-        btn.className = `tab-btn ${index === currentDayIndex && currentDayIndex !== 'expense' ? 'active' : ''}`;
+        btn.className = `tab-btn ${index === currentDayIndex && typeof currentDayIndex === 'number' ? 'active' : ''}`;
         btn.innerText = day.day_id;
         btn.onclick = () => {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -98,7 +98,7 @@ function renderTabs() {
         tabsContainer.appendChild(btn);
     });
 
-    // 加入「事前支出」按鈕
+    // 加入「支出明細」按鈕
     const expenseBtn = document.createElement('button');
     expenseBtn.className = `tab-btn ${currentDayIndex === 'expense' ? 'active' : ''}`;
     expenseBtn.innerText = "支出明細";
@@ -108,6 +108,17 @@ function renderTabs() {
         loadPreTripExpenses();
     };
     tabsContainer.appendChild(expenseBtn);
+
+    // 加入「天氣與攝影機」按鈕
+    const weatherBtn = document.createElement('button');
+    weatherBtn.className = `tab-btn ${currentDayIndex === 'weather' ? 'active' : ''}`;
+    weatherBtn.innerText = "天氣與攝影機";
+    weatherBtn.onclick = () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        weatherBtn.classList.add('active');
+        loadWeatherWebcam();
+    };
+    tabsContainer.appendChild(weatherBtn);
 }
 
 // 6. 載入特定天數的資料
@@ -299,6 +310,12 @@ let editingExpCatIndex = null;
 let editingExpItemIndex = null;
 
 function openListModal() {
+    // 1. 防錯：如果是天氣頁面，不允許編輯，跳出提示
+    if (currentDayIndex === 'weather') {
+        alert("天氣與攝影機是自動從行程中抓取的，請到對應的每日行程中編輯連結！");
+        return;
+    }
+
     const container = document.getElementById('edit-list-container');
     container.innerHTML = '';
 
@@ -402,7 +419,6 @@ function openListModal() {
     
     document.getElementById('list-modal').classList.add('active');
 }
-
 
 // --- 新增：支出明細的編輯功能 ---
 function openExpenseFormModal(catIdx, itemIdx) {
@@ -661,4 +677,91 @@ function setupScrollTracking() {
     document.querySelectorAll('.scroll-track').forEach(el => {
         scrollObserver.observe(el);
     });
+}
+// ================= 天氣與攝影機整合功能 =================
+function loadWeatherWebcam() {
+    currentDayIndex = 'weather';
+    document.querySelector('.map-container').style.display = 'none'; // 隱藏地圖
+    document.getElementById('day-title').innerText = "即時天氣與攝影機";
+    
+    const timelineContainer = document.getElementById('timeline-container');
+    timelineContainer.innerHTML = '<div style="text-align:center; padding: 20px; color: #666;">資料整理中...</div>';
+
+    // 1. 收集所有包含攝影機或天氣連結的景點
+    const locations = [];
+    currentData.daily_itinerary.forEach(day => {
+        day.activities.forEach(act => {
+            if (act.links && (act.links.webcam || act.links.weather)) {
+                // 避免同一個景點重複出現
+                if (!locations.find(l => l.name === act.activity)) {
+                    locations.push({
+                        name: act.activity,
+                        lat: act.lat,
+                        lng: act.lng,
+                        webcam: act.links.webcam,
+                        weatherLink: act.links.weather
+                    });
+                }
+            }
+        });
+    });
+
+    if (locations.length === 0) {
+        timelineContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: #666;">目前行程中沒有包含攝影機或天氣連結的景點。  
+  
+請在編輯行程時加入連結。</div>';
+        return;
+    }
+
+    // 2. 產生 HTML 結構
+    let html = '<div class="weather-grid">';
+    locations.forEach((loc, idx) => {
+        let buttonsHtml = '';
+        if (loc.webcam) buttonsHtml += `<a href="${loc.webcam}" target="_blank" class="link-btn">📷 攝影機</a>`;
+        if (loc.weatherLink) buttonsHtml += `<a href="${loc.weatherLink}" target="_blank" class="link-btn">🌤️ 官方天氣</a>`;
+
+        html += `
+            <div class="weather-card">
+                <div class="weather-header">
+                    <div class="weather-title">${loc.name}</div>
+                    <div class="weather-actions">${buttonsHtml}</div>
+                </div>
+                ${loc.lat && loc.lng ? `<div class="live-weather" id="live-weather-${idx}">讀取即時天氣中...</div>` : '<div class="live-weather" style="color:#999;">無座標資料，無法讀取天氣</div>'}
+            </div>
+        `;
+    });
+    html += '</div>';
+    timelineContainer.innerHTML = html;
+
+    // 3. 呼叫免費天氣 API (Open-Meteo) 取得即時氣溫
+    locations.forEach(async (loc, idx) => {
+        if (loc.lat && loc.lng) {
+            try {
+                const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lng}&current=temperature_2m,weather_code&timezone=auto` );
+                const data = await res.json();
+                const temp = data.current.temperature_2m;
+                const code = data.current.weather_code;
+                const weatherInfo = getWeatherDescription(code);
+                
+                document.getElementById(`live-weather-${idx}`).innerHTML = `
+                    <div class="weather-temp">${temp}°C</div>
+                    <div class="weather-desc">${weatherInfo.icon} ${weatherInfo.text}</div>
+                `;
+            } catch (e) {
+                document.getElementById(`live-weather-${idx}`).innerHTML = `<span style="color:#999;">無法取得即時天氣</span>`;
+            }
+        }
+    });
+}
+
+// 將 WMO 天氣代碼轉換為圖示與文字
+function getWeatherDescription(code) {
+    if (code === 0) return { icon: '☀️', text: '晴天' };
+    if (code === 1 || code === 2 || code === 3) return { icon: '⛅', text: '多雲' };
+    if (code === 45 || code === 48) return { icon: '🌫️', text: '霧' };
+    if (code >= 51 && code <= 55) return { icon: '🌧️', text: '毛毛雨' };
+    if (code >= 61 && code <= 65) return { icon: '🌧️', text: '雨' };
+    if (code >= 71 && code <= 77) return { icon: '🌨️', text: '雪' };
+    if (code >= 95 && code <= 99) return { icon: '⛈️', text: '雷雨' };
+    return { icon: '☁️', text: '未知' };
 }
