@@ -407,13 +407,32 @@ input:checked + .slider:before { transform: translateX(22px); }
     font-size: 16px; font-weight: bold; color: var(--swiss-red); margin-bottom: 15px;
 }
 .note-input-group {
-    display: flex; gap: 10px; margin-bottom: 15px;
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
 }
 .note-input-group input {
-    flex-grow: 1; padding: 12px 15px; border: 1px solid #DDD; border-radius: 8px; font-size: 14px;
+    flex-grow: 1;
+    padding: 12px 15px;
+    border: 1px solid #DDD;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    width: 100%; /* 確保在手機上能撐開 */
+}
+.note-input-group input:focus {
+    border-color: var(--swiss-red);
 }
 .note-input-group button {
-    background: #1A2B3C; color: white; border: none; padding: 0 20px; border-radius: 8px; font-weight: bold; cursor: pointer; white-space: nowrap;
+    background: #1A2530; /* 深藍黑色，符合您截圖的質感 */
+    color: white;
+    border: none;
+    padding: 0 20px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    white-space: nowrap; /* 防止按鈕文字換行或被擠壓 */
+    flex-shrink: 0; /* 防止按鈕被輸入框擠壓變形 */
 }
 .note-list {
     display: flex; flex-direction: column;
