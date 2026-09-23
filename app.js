@@ -9,8 +9,11 @@ let editingActivityIndex = null;
 let editingAccKey = null;
 let isAuthenticated = false;
 let isViewAuthenticated = false;
+let editingExpCatIndex = null;
+let editingExpItemIndex = null;
+let scrollObserver = null;
 
-// 1. 初始化 (由 Google Maps API 載入後觸發)
+// 1. 初始化
 async function initMap() {
     document.getElementById('day-title').innerText = "雲端資料載入中...";
     try {
@@ -19,10 +22,7 @@ async function initMap() {
         } );
         const result = await response.json();
         currentData = result.record;
-        
-        if (currentData.requireViewPassword === undefined) {
-            currentData.requireViewPassword = true;
-        }
+        if (currentData.requireViewPassword === undefined) currentData.requireViewPassword = true;
         checkViewPasswordAndRender();
     } catch (error) {
         alert("讀取雲端資料失敗，請檢查網路連線！");
@@ -54,11 +54,7 @@ function verifyViewPassword() {
 async function renderApp() {
     const { Map } = await google.maps.importLibrary("maps");
     map = new Map(document.getElementById("map"), {
-        zoom: 8,
-        center: { lat: 46.8182, lng: 8.2275 },
-        mapId: "DEMO_MAP_ID",
-        disableDefaultUI: true,
-        zoomControl: true
+        zoom: 8, center: { lat: 46.8182, lng: 8.2275 }, mapId: "DEMO_MAP_ID", disableDefaultUI: true, zoomControl: true
     });
     renderTabs();
     loadDay(0);
@@ -70,13 +66,14 @@ async function saveCloudData() {
     try {
         await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
             method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Master-Key': API_KEY
-            },
+            headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
             body: JSON.stringify(currentData )
         });
-        loadDay(currentDayIndex);
+        
+        if (currentDayIndex === 'expense') loadPreTripExpenses();
+        else if (currentDayIndex === 'weather') loadWeatherWebcam();
+        else if (currentDayIndex === 'notes') loadNotesSummary();
+        else loadDay(currentDayIndex);
     } catch (error) {
         alert("儲存失敗，請檢查網路連線！");
     }
@@ -98,7 +95,6 @@ function renderTabs() {
         tabsContainer.appendChild(btn);
     });
 
-    // 加入「支出明細」按鈕
     const expenseBtn = document.createElement('button');
     expenseBtn.className = `tab-btn ${currentDayIndex === 'expense' ? 'active' : ''}`;
     expenseBtn.innerText = "支出明細";
@@ -109,7 +105,6 @@ function renderTabs() {
     };
     tabsContainer.appendChild(expenseBtn);
 
-    // 加入「天氣與攝影機」按鈕
     const weatherBtn = document.createElement('button');
     weatherBtn.className = `tab-btn ${currentDayIndex === 'weather' ? 'active' : ''}`;
     weatherBtn.innerText = "天氣與攝影機";
@@ -119,6 +114,16 @@ function renderTabs() {
         loadWeatherWebcam();
     };
     tabsContainer.appendChild(weatherBtn);
+
+    const notesBtn = document.createElement('button');
+    notesBtn.className = `tab-btn ${currentDayIndex === 'notes' ? 'active' : ''}`;
+    notesBtn.innerText = "備註總結";
+    notesBtn.onclick = () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        notesBtn.classList.add('active');
+        loadNotesSummary();
+    };
+    tabsContainer.appendChild(notesBtn);
 }
 
 // 6. 載入特定天數的資料
@@ -141,7 +146,7 @@ async function loadDay(index) {
         if (acc.other) accLinksHtml += `<a href="${acc.other}" target="_blank" class="link-btn">🔗 其他</a>`;
 
         timelineContainer.innerHTML += `
-                <div class="accommodation-card scroll-track" data-lat="${acc.lat || ''}" data-lng="${acc.lng || ''}">
+            <div class="accommodation-card scroll-track" data-lat="${acc.lat || ''}" data-lng="${acc.lng || ''}">
                 <div class="acc-left">
                     <div class="acc-icon">🏠</div>
                     <div>
@@ -160,7 +165,7 @@ async function loadDay(index) {
             const searchQuery = encodeURIComponent(act.query);
             linksHtml += `<a href="https://www.google.com/maps/search/?api=1&query=${searchQuery}" target="_blank" class="link-btn">📍 地圖</a>`;
         }
-       if (act.links) {
+        if (act.links ) {
             if (act.links.website) linksHtml += `<a href="${act.links.website}" target="_blank" class="link-btn">🌐 官網</a>`;
             if (act.links.transit_map) linksHtml += `<a href="${act.links.transit_map}" target="_blank" class="link-btn">🗺️ 交通圖</a>`;
             if (act.links.sbb) linksHtml += `<a href="${act.links.sbb}" target="_blank" class="link-btn">🚆 SBB</a>`;
@@ -188,70 +193,103 @@ async function loadDay(index) {
             </div>
         `;
     });
-    updateMapMarkers(dayData);
-    setTimeout(setupScrollTracking, 800); // 延遲 0.8 秒後啟動滑動追蹤
-}
-// --- 新增：載入事前支出明細 (Mobile First 列表版) ---
-function loadPreTripExpenses() {
-    currentDayIndex = 'expense';
-    document.querySelector('.map-container').style.display = 'none'; // 隱藏地圖，騰出空間
-    document.getElementById('day-title').innerText = "支出明細";
-    
-    const timelineContainer = document.getElementById('timeline-container');
-    timelineContainer.innerHTML = '';
 
-    if (!currentData.pre_trip_expenses) return;
-
-    let html = '';
-    currentData.pre_trip_expenses.categories.forEach(cat => {
-        let itemsHtml = '';
-        cat.items.forEach(item => {
-            // 組合金額標籤
-            let tags = '';
-            
-            // 1. 先顯示亞洲萬里通
-            if (item.asiamiles) tags += `<span class="val-tag">亞洲萬里通: ${item.asiamiles}</span>`;
-            
-            // 2. 再顯示總計
-            if (item.total) {
-                // 根據類別名稱，自動切換「總計」的顯示文字
-                let totalLabel = "總計";
-                if (cat.title.includes('住宿')) totalLabel = "房價總計";
-                else if (cat.title.includes('交通')) totalLabel = "總計";
-                else if (cat.title.includes('景點')) totalLabel = "CHF";
-                
-                tags += `<span class="val-tag">${totalLabel}: ${item.total}</span>`;
-            }
-            
-            // 3. 其他項目
-            if (item.per_night) tags += `<span class="val-tag">每晚: ${item.per_night}</span>`;
-            if (item.per_person) tags += `<span class="val-tag highlight">每人: ${item.per_person}</span>`;
-            
-            itemsHtml += `
-                <div class="expense-row">
-                    <div class="expense-name">${item.name}</div>
-                    <div class="expense-vals">${tags}</div>
+    // --- 載入當天備註區塊 ---
+    let notesHtml = '';
+    const notes = dayData.notes || [];
+    notes.forEach((note, nIdx) => {
+        notesHtml += `
+            <div class="note-item">
+                <div class="note-content">
+                    <input type="checkbox" ${note.checked ? 'checked' : ''} onchange="toggleNote(${index}, ${nIdx})">
+                    <span class="note-text ${note.checked ? 'checked' : ''}">${note.text}</span>
                 </div>
-            `;
-        });
-
-        html += `
-            <div class="expense-container">
-                <div class="expense-category-title">${cat.title}</div>
-                <div class="expense-list">
-                    ${itemsHtml}
-                </div>
+                <button class="note-delete" onclick="deleteNote(${index}, ${nIdx})">刪除</button>
             </div>
         `;
     });
 
-    html += `
-        <div class="expense-total-row">
-            機票、酒店、交通、景點每人總計：
-            <span class="highlight-yellow" style="font-size: 20px; display: inline-block; margin-top: 8px;">HK$${currentData.pre_trip_expenses.summary.total_per_person}</span>
+    timelineContainer.innerHTML += `
+        <div class="notes-section">
+            <div class="notes-header">📝 當天備註 / 準備事項</div>
+            <div class="note-input-group">
+                <input type="text" id="new-note-input" placeholder="添加一項準備事項...">
+                <button onclick="addNote(${index})">添加</button>
+            </div>
+            <div class="note-list">
+                ${notesHtml}
+            </div>
         </div>
     `;
 
+    updateMapMarkers(dayData);
+    setTimeout(setupScrollTracking, 800);
+}
+// ================= 備註功能邏輯 =================
+function addNote(dayIndex) {
+    const input = document.getElementById('new-note-input');
+    const text = input.value.trim();
+    if (!text) return;
+    
+    if (!currentData.daily_itinerary[dayIndex].notes) {
+        currentData.daily_itinerary[dayIndex].notes = [];
+    }
+    currentData.daily_itinerary[dayIndex].notes.push({ text: text, checked: false });
+    saveCloudData();
+}
+
+function toggleNote(dayIndex, noteIndex) {
+    const note = currentData.daily_itinerary[dayIndex].notes[noteIndex];
+    note.checked = !note.checked;
+    saveCloudData();
+}
+
+function deleteNote(dayIndex, noteIndex) {
+    currentData.daily_itinerary[dayIndex].notes.splice(noteIndex, 1);
+    saveCloudData();
+}
+
+function loadNotesSummary() {
+    currentDayIndex = 'notes';
+    document.querySelector('.map-container').style.display = 'none';
+    document.getElementById('day-title').innerText = "備註與準備事項總結";
+    
+    const timelineContainer = document.getElementById('timeline-container');
+    let html = '';
+    let hasAnyNotes = false;
+
+    currentData.daily_itinerary.forEach((day, dIdx) => {
+        if (day.notes && day.notes.length > 0) {
+            hasAnyNotes = true;
+            let notesHtml = '';
+            day.notes.forEach((note, nIdx) => {
+                notesHtml += `
+                    <div class="note-item">
+                        <div class="note-content">
+                            <input type="checkbox" ${note.checked ? 'checked' : ''} onchange="toggleNote(${dIdx}, ${nIdx})">
+                            <span class="note-text ${note.checked ? 'checked' : ''}">${note.text}</span>
+                        </div>
+                        <button class="note-delete" onclick="deleteNote(${dIdx}, ${nIdx})">刪除</button>
+                    </div>
+                `;
+            });
+
+            html += `
+                <div class="notes-section" style="margin-bottom: 20px; margin-top: 0;">
+                    <div class="notes-header">${day.day_id} · ${day.date}</div>
+                    <div class="note-list">
+                        ${notesHtml}
+                    </div>
+                </div>
+            `;
+        }
+    });
+
+    if (!hasAnyNotes) {
+        html = '<div style="padding: 20px; text-align: center; color: #666;">目前沒有任何備註事項。' + '  
+  
+' + '請在每日行程下方添加。</div>';
+    }
     timelineContainer.innerHTML = html;
 }
 
@@ -275,7 +313,7 @@ async function updateMapMarkers(dayData) {
         }
     });
 
-    if (dayData.accommodation && currentData.accommodations[dayData.accommodation]) {
+    if (dayData.accommodation && currentData.accommodations[dayData.accommodation] && !dayData.hide_acc_card) {
         const acc = currentData.accommodations[dayData.accommodation];
         if (acc.lat && acc.lng) {
             const accDiv = document.createElement('div');
@@ -298,6 +336,99 @@ async function updateMapMarkers(dayData) {
     }
 }
 
+function loadPreTripExpenses() {
+    currentDayIndex = 'expense';
+    document.querySelector('.map-container').style.display = 'none';
+    document.getElementById('day-title').innerText = "支出明細";
+    const timelineContainer = document.getElementById('timeline-container');
+    timelineContainer.innerHTML = '';
+    if (!currentData.pre_trip_expenses) return;
+
+    let html = '';
+    currentData.pre_trip_expenses.categories.forEach(cat => {
+        let itemsHtml = '';
+        cat.items.forEach(item => {
+            let tags = '';
+            if (item.asiamiles) tags += `<span class="val-tag">亞洲萬里通: ${item.asiamiles}</span>`;
+            if (item.total) {
+                let totalLabel = "總計";
+                if (cat.title.includes('住宿')) totalLabel = "房價總計";
+                else if (cat.title.includes('交通')) totalLabel = "總計";
+                else if (cat.title.includes('景點')) totalLabel = "CHF";
+                tags += `<span class="val-tag">${totalLabel}: ${item.total}</span>`;
+            }
+            if (item.per_night) tags += `<span class="val-tag">每晚: ${item.per_night}</span>`;
+            if (item.per_person) tags += `<span class="val-tag highlight">每人: ${item.per_person}</span>`;
+            
+            itemsHtml += `<div class="expense-row"><div class="expense-name">${item.name}</div><div class="expense-vals">${tags}</div></div>`;
+        });
+        html += `<div class="expense-container"><div class="expense-category-title">${cat.title}</div><div class="expense-list">${itemsHtml}</div></div>`;
+    });
+    html += `<div class="expense-total-row">機票、酒店、交通、景點每人總計：<span class="highlight-yellow" style="font-size: 20px; display: inline-block; margin-top: 8px;">HK$${currentData.pre_trip_expenses.summary.total_per_person}</span></div>`;
+    timelineContainer.innerHTML = html;
+}
+
+function loadWeatherWebcam() {
+    currentDayIndex = 'weather';
+    document.querySelector('.map-container').style.display = 'none';
+    document.getElementById('day-title').innerText = "即時天氣與攝影機";
+    const timelineContainer = document.getElementById('timeline-container');
+    timelineContainer.innerHTML = '<div style="text-align:center; padding: 20px; color: #666;">資料整理中...</div>';
+
+    const locations = [];
+    currentData.daily_itinerary.forEach(day => {
+        day.activities.forEach(act => {
+            if (act.links && (act.links.webcam || act.links.weather)) {
+                if (!locations.find(l => l.name === act.activity)) {
+                    locations.push({ name: act.activity, lat: act.lat, lng: act.lng, webcam: act.links.webcam, weatherLink: act.links.weather });
+                }
+            }
+        });
+    });
+
+    if (locations.length === 0) {
+        timelineContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: #666;">目前行程中沒有包含攝影機或天氣連結的景點。<br>請在編輯行程時加入連結。</div>';
+        return;
+    }
+
+    let html = '<div class="weather-grid">';
+    locations.forEach((loc, idx) => {
+        let buttonsHtml = '';
+        if (loc.webcam) buttonsHtml += '<a href="' + loc.webcam + '" target="_blank" class="link-btn">📷 攝影機</a>';
+        if (loc.weatherLink) buttonsHtml += '<a href="' + loc.weatherLink + '" target="_blank" class="link-btn">🌤️ 官方天氣</a>';
+        let liveWeatherHtml = '<div class="live-weather" style="color:#999;">無座標資料，無法讀取天氣</div>';
+        if (loc.lat && loc.lng) liveWeatherHtml = '<div class="live-weather" id="live-weather-' + idx + '">讀取即時天氣中...</div>';
+        html += '<div class="weather-card"><div class="weather-header"><div class="weather-title">' + loc.name + '</div><div class="weather-actions">' + buttonsHtml + '</div></div>' + liveWeatherHtml + '</div>';
+    });
+    html += '</div>';
+    timelineContainer.innerHTML = html;
+
+    locations.forEach(async (loc, idx) => {
+        if (loc.lat && loc.lng) {
+            try {
+                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=' + loc.lat + '&longitude=' + loc.lng + '&current=temperature_2m,weather_code&timezone=auto' );
+                const data = await res.json();
+                const temp = data.current.temperature_2m;
+                const code = data.current.weather_code;
+                const weatherInfo = getWeatherDescription(code);
+                document.getElementById('live-weather-' + idx).innerHTML = '<div class="weather-temp">' + temp + '°C</div><div class="weather-desc">' + weatherInfo.icon + ' ' + weatherInfo.text + '</div>';
+            } catch (e) {
+                document.getElementById('live-weather-' + idx).innerHTML = '<span style="color:#999;">無法取得即時天氣</span>';
+            }
+        }
+    });
+}
+
+function getWeatherDescription(code) {
+    if (code === 0) return { icon: '☀️', text: '晴天' };
+    if (code === 1 || code === 2 || code === 3) return { icon: '⛅', text: '多雲' };
+    if (code === 45 || code === 48) return { icon: '🌫️', text: '霧' };
+    if (code >= 51 && code <= 55) return { icon: '🌧️', text: '毛毛雨' };
+    if (code >= 61 && code <= 65) return { icon: '🌧️', text: '雨' };
+    if (code >= 71 && code <= 77) return { icon: '🌨️', text: '雪' };
+    if (code >= 95 && code <= 99) return { icon: '⛈️', text: '雷雨' };
+    return { icon: '☁️', text: '未知' };
+}
 // ================= 編輯功能邏輯 =================
 function checkPasswordAndOpen() {
     if (isAuthenticated) { openListModal(); return; }
@@ -306,20 +437,15 @@ function checkPasswordAndOpen() {
     else if (pwd !== null) { alert("密碼錯誤，無法編輯！"); }
 }
 
-let editingExpCatIndex = null;
-let editingExpItemIndex = null;
-
 function openListModal() {
-    // 1. 防錯：如果是天氣頁面，不允許編輯，跳出提示
-    if (currentDayIndex === 'weather') {
-        alert("天氣與攝影機是自動從行程中抓取的，請編輯連結！");
+    if (currentDayIndex === 'weather' || currentDayIndex === 'notes') {
+        alert("此頁面資料是自動產生的，請到對應的每日行程中編輯！");
         return;
     }
 
     const container = document.getElementById('edit-list-container');
     container.innerHTML = '';
 
-    // --- 密碼開關 (所有頁面共用) ---
     const isChecked = currentData.requireViewPassword ? 'checked' : '';
     const pwdToggleHtml = `
         <div class="edit-list-item" style="background: #FFF3E0; border-color: #FFE0B2; margin-bottom: 15px;">
@@ -335,14 +461,11 @@ function openListModal() {
     `;
 
     if (currentDayIndex === 'expense') {
-        // --- 編輯支出明細模式 ---
         document.getElementById('modal-day-title').innerText = `編輯 支出明細`;
         document.querySelector('#list-modal .add-btn').style.display = 'none'; 
         document.querySelector('#list-modal .sort-hint').style.display = 'none';
+        container.innerHTML += pwdToggleHtml;
 
-        container.innerHTML += pwdToggleHtml; // 加入密碼開關
-
-        // 1. 總計區塊
         container.innerHTML += `
             <div class="edit-list-item" style="background: #FFF9C4; border-color: #FFE082; margin-bottom: 15px;">
                 <div class="edit-list-info">
@@ -355,10 +478,8 @@ function openListModal() {
             </div>
         `;
 
-        // 2. 各類別項目
         currentData.pre_trip_expenses.categories.forEach((cat, cIdx) => {
             container.innerHTML += `<h4 style="margin: 15px 0 10px; color: var(--swiss-red); border-bottom: 1px solid #FFEBEE; padding-bottom: 5px;">${cat.title}</h4>`;
-            
             cat.items.forEach((item, iIdx) => {
                 container.innerHTML += `
                     <div class="edit-list-item">
@@ -377,14 +498,12 @@ function openListModal() {
         });
 
     } else {
-        // --- 編輯每日行程模式 ---
         document.querySelector('#list-modal .add-btn').style.display = 'block';
         document.querySelector('#list-modal .sort-hint').style.display = 'block';
         
         const dayData = currentData.daily_itinerary[currentDayIndex];
         document.getElementById('modal-day-title').innerText = `編輯 ${dayData.day_id} 行程`;
-        
-        container.innerHTML += pwdToggleHtml; // 加入密碼開關
+        container.innerHTML += pwdToggleHtml;
 
         if (dayData.accommodation && currentData.accommodations[dayData.accommodation] && !dayData.hide_acc_card) {
             const accName = currentData.accommodations[dayData.accommodation].name;
@@ -416,112 +535,23 @@ function openListModal() {
             `;
         });
     }
-    
     document.getElementById('list-modal').classList.add('active');
 }
 
-// --- 新增：支出明細的編輯功能 ---
-function openExpenseFormModal(catIdx, itemIdx) {
-    editingExpCatIndex = catIdx;
-    editingExpItemIndex = itemIdx;
-    
-    if (itemIdx !== null) {
-        const item = currentData.pre_trip_expenses.categories[catIdx].items[itemIdx];
-        document.getElementById('edit-exp-name').value = item.name || '';
-        document.getElementById('edit-exp-total').value = item.total || '';
-        document.getElementById('edit-exp-person').value = item.per_person || '';
-        document.getElementById('edit-exp-night').value = item.per_night || '';
-        document.getElementById('edit-exp-miles').value = item.asiamiles || '';
-    } else {
-        document.getElementById('edit-exp-name').value = '';
-        document.getElementById('edit-exp-total').value = '';
-        document.getElementById('edit-exp-person').value = '';
-        document.getElementById('edit-exp-night').value = '';
-        document.getElementById('edit-exp-miles').value = '';
-    }
-    document.getElementById('expense-form-modal').classList.add('active');
-}
-
-function closeExpenseFormModal() {
-    document.getElementById('expense-form-modal').classList.remove('active');
-}
-
-function saveExpenseItem() {
-    const cat = currentData.pre_trip_expenses.categories[editingExpCatIndex];
-    let item = editingExpItemIndex === null ? {} : cat.items[editingExpItemIndex];
-    
-    item.name = document.getElementById('edit-exp-name').value;
-    item.total = document.getElementById('edit-exp-total').value;
-    item.per_person = document.getElementById('edit-exp-person').value;
-    item.per_night = document.getElementById('edit-exp-night').value;
-    item.asiamiles = document.getElementById('edit-exp-miles').value;
-    
-    if(!item.total) delete item.total;
-    if(!item.per_person) delete item.per_person;
-    if(!item.per_night) delete item.per_night;
-    if(!item.asiamiles) delete item.asiamiles;
-    
-    if (editingExpItemIndex === null) cat.items.push(item);
-    
-    closeExpenseFormModal();
-    openListModal();
-    saveCloudData(); // 自動同步到雲端
-}
-
-function deleteExpenseItem(catIdx, itemIdx) {
-    if(confirm('確定要刪除這個支出項目嗎？')) {
-        currentData.pre_trip_expenses.categories[catIdx].items.splice(itemIdx, 1);
-        saveCloudData();
-        openListModal();
-    }
-}
-
-function openExpenseSummaryModal() {
-    document.getElementById('edit-exp-summary').value = currentData.pre_trip_expenses.summary.total_per_person || '';
-    document.getElementById('expense-summary-modal').classList.add('active');
-}
-
-function closeExpenseSummaryModal() {
-    document.getElementById('expense-summary-modal').classList.remove('active');
-}
-
-function saveExpenseSummary() {
-    currentData.pre_trip_expenses.summary.total_per_person = document.getElementById('edit-exp-summary').value;
-    closeExpenseSummaryModal();
-    openListModal();
-    saveCloudData(); // 自動同步到雲端
-}
-
 function closeListModal() { document.getElementById('list-modal').classList.remove('active'); }
-
-function toggleViewPassword() {
-    currentData.requireViewPassword = document.getElementById('pwd-toggle').checked;
-    saveCloudData();
-}
-
+function toggleViewPassword() { currentData.requireViewPassword = document.getElementById('pwd-toggle').checked; saveCloudData(); }
 function deleteActivity(index) {
     if(confirm('確定要刪除這個行程嗎？')) {
         currentData.daily_itinerary[currentDayIndex].activities.splice(index, 1);
-        saveCloudData();
-        openListModal();
+        saveCloudData(); openListModal();
     }
 }
 
 function openNewFormModal() {
     editingActivityIndex = null;
-    document.getElementById('edit-time').value = '';
-    document.getElementById('edit-name').value = '';
-    document.getElementById('edit-content').value = '';
-    document.getElementById('edit-map').value = '';
-    document.getElementById('edit-lat').value = '';
-    document.getElementById('edit-lng').value = '';
-    document.getElementById('edit-website').value = '';
-    document.getElementById('edit-transit-map').value = '';
-    document.getElementById('edit-sbb').value = '';
-    document.getElementById('edit-webcam').value = '';
-    document.getElementById('edit-weather').value = '';
-    document.getElementById('edit-blogger').value = '';
-    document.getElementById('edit-other').value = '';
+    ['time','name','content','map','lat','lng','website','transit-map','sbb','webcam','weather','blogger','other'].forEach(id => {
+        document.getElementById('edit-' + id).value = '';
+    });
     document.getElementById('form-modal').classList.add('active');
 }
 
@@ -549,10 +579,7 @@ function closeFormModal() { document.getElementById('form-modal').classList.remo
 function sortActivities(activities) {
     const getTimeValue = (t) => {
         if (!t) return 9999;
-        if (t.includes(':')) {
-            const [h, m] = t.split(':');
-            return parseInt(h) * 60 + parseInt(m);
-        }
+        if (t.includes(':')) { const [h, m] = t.split(':'); return parseInt(h) * 60 + parseInt(m); }
         if (t.includes('全日')) return 0;
         if (t.includes('早上') || t.includes('上午')) return 8 * 60;
         if (t.includes('中午')) return 12 * 60;
@@ -588,19 +615,13 @@ function saveActivity() {
     act.links.blogger = document.getElementById('edit-blogger').value;
     act.links.other = document.getElementById('edit-other').value;
     
-    if(!act.links.website) delete act.links.website;
-    if(!act.links.transit_map) delete act.links.transit_map;
-    if(!act.links.sbb) delete act.links.sbb;
-    if(!act.links.webcam) delete act.links.webcam;
-    if(!act.links.weather) delete act.links.weather;
-    if(!act.links.blogger) delete act.links.blogger;
-    if(!act.links.other) delete act.links.other;
+    ['website','transit_map','sbb','webcam','weather','blogger','other'].forEach(k => {
+        if(!act.links[k]) delete act.links[k];
+    });
     if(Object.keys(act.links).length === 0) delete act.links;
     
     sortActivities(activities);
-    closeFormModal();
-    openListModal();
-    saveCloudData(); // 儲存到雲端
+    closeFormModal(); openListModal(); saveCloudData();
 }
 
 function openAccFormModal(accKey) {
@@ -620,24 +641,80 @@ function closeAccFormModal() { document.getElementById('acc-form-modal').classLi
 function saveAccommodation() {
     if (!editingAccKey) return;
     const acc = currentData.accommodations[editingAccKey];
-    
     acc.name = document.getElementById('edit-acc-name').value;
     acc.query = document.getElementById('edit-acc-map').value;
-    
     const latVal = parseFloat(document.getElementById('edit-acc-lat').value);
     const lngVal = parseFloat(document.getElementById('edit-acc-lng').value);
     if (!isNaN(latVal)) acc.lat = latVal; else delete acc.lat;
     if (!isNaN(lngVal)) acc.lng = lngVal; else delete acc.lng;
-    
     acc.website = document.getElementById('edit-acc-website').value;
     acc.other = document.getElementById('edit-acc-other').value;
-    
     if(!acc.website) delete acc.website;
     if(!acc.other) delete acc.other;
+    closeAccFormModal(); openListModal(); saveCloudData();
+}
+
+function openExpenseFormModal(catIdx, itemIdx) {
+    editingExpCatIndex = catIdx; editingExpItemIndex = itemIdx;
+    if (itemIdx !== null) {
+        const item = currentData.pre_trip_expenses.categories[catIdx].items[itemIdx];
+        document.getElementById('edit-exp-name').value = item.name || '';
+        document.getElementById('edit-exp-total').value = item.total || '';
+        document.getElementById('edit-exp-person').value = item.per_person || '';
+        document.getElementById('edit-exp-night').value = item.per_night || '';
+        document.getElementById('edit-exp-miles').value = item.asiamiles || '';
+    } else {
+        ['name','total','person','night','miles'].forEach(id => document.getElementById('edit-exp-' + id).value = '');
+    }
+    document.getElementById('expense-form-modal').classList.add('active');
+}
+
+function closeExpenseFormModal() { document.getElementById('expense-form-modal').classList.remove('active'); }
+
+function saveExpenseItem() {
+    const cat = currentData.pre_trip_expenses.categories[editingExpCatIndex];
+    let item = editingExpItemIndex === null ? {} : cat.items[editingExpItemIndex];
     
-    closeAccFormModal();
+    item.name = document.getElementById('edit-exp-name').value;
+    item.total = document.getElementById('edit-exp-total').value;
+    item.per_person = document.getElementById('edit-exp-person').value;
+    item.per_night = document.getElementById('edit-exp-night').value;
+    item.asiamiles = document.getElementById('edit-exp-miles').value;
+    
+    if(!item.total) delete item.total;
+    if(!item.per_person) delete item.per_person;
+    if(!item.per_night) delete item.per_night;
+    if(!item.asiamiles) delete item.asiamiles;
+    
+    if (editingExpItemIndex === null) cat.items.push(item);
+    
+    closeExpenseFormModal();
     openListModal();
-    saveCloudData(); // 儲存到雲端
+    saveCloudData();
+}
+
+function deleteExpenseItem(catIdx, itemIdx) {
+    if(confirm('確定要刪除這個支出項目嗎？')) {
+        currentData.pre_trip_expenses.categories[catIdx].items.splice(itemIdx, 1);
+        saveCloudData();
+        openListModal();
+    }
+}
+
+function openExpenseSummaryModal() {
+    document.getElementById('edit-exp-summary').value = currentData.pre_trip_expenses.summary.total_per_person || '';
+    document.getElementById('expense-summary-modal').classList.add('active');
+}
+
+function closeExpenseSummaryModal() { 
+    document.getElementById('expense-summary-modal').classList.remove('active'); 
+}
+
+function saveExpenseSummary() {
+    currentData.pre_trip_expenses.summary.total_per_person = document.getElementById('edit-exp-summary').value;
+    closeExpenseSummaryModal();
+    openListModal();
+    saveCloudData();
 }
 
 // ================= 滑動聯動地圖功能 =================
@@ -662,89 +739,4 @@ function setupScrollTracking() {
     }, options);
 
     document.querySelectorAll('.scroll-track').forEach(el => scrollObserver.observe(el));
-}
-
-// ================= 天氣與攝影機整合功能 =================
-function loadWeatherWebcam() {
-    currentDayIndex = 'weather';
-    document.querySelector('.map-container').style.display = 'none';
-    document.getElementById('day-title').innerText = "即時天氣與攝影機";
-    
-    const timelineContainer = document.getElementById('timeline-container');
-    timelineContainer.innerHTML = '<div style="text-align:center; padding: 20px; color: #666;">資料整理中...</div>';
-
-    const locations = [];
-    currentData.daily_itinerary.forEach(day => {
-        day.activities.forEach(act => {
-            if (act.links && (act.links.webcam || act.links.weather)) {
-                if (!locations.find(l => l.name === act.activity)) {
-                    locations.push({
-                        name: act.activity,
-                        lat: act.lat,
-                        lng: act.lng,
-                        webcam: act.links.webcam,
-                        weatherLink: act.links.weather
-                    });
-                }
-            }
-        });
-    });
-
-    if (locations.length === 0) {
-        timelineContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: #666;">目前行程中沒有包含攝影機或天氣連結的景點。<br>請在編輯行程時加入連結。</div>';
-        return;
-    }
-
-    let html = '<div class="weather-grid">';
-    locations.forEach((loc, idx) => {
-        let buttonsHtml = '';
-        if (loc.webcam) {
-            buttonsHtml += '<a href="' + loc.webcam + '" target="_blank" class="link-btn">📷 攝影機</a>';
-        }
-        if (loc.weatherLink) {
-            buttonsHtml += '<a href="' + loc.weatherLink + '" target="_blank" class="link-btn">🌤️ 天氣</a>';
-        }
-
-        let liveWeatherHtml = '<div class="live-weather" style="color:#999;">無座標資料，無法讀取天氣</div>';
-        if (loc.lat && loc.lng) {
-            liveWeatherHtml = '<div class="live-weather" id="live-weather-' + idx + '">讀取即時天氣中...</div>';
-        }
-
-        html += '<div class="weather-card">';
-        html += '  <div class="weather-header">';
-        html += '    <div class="weather-title">' + loc.name + '</div>';
-        html += '    <div class="weather-actions">' + buttonsHtml + '</div>';
-        html += '  </div>';
-        html += '  ' + liveWeatherHtml;
-        html += '</div>';
-    });
-    html += '</div>';
-    timelineContainer.innerHTML = html;
-
-    locations.forEach(async (loc, idx) => {
-        if (loc.lat && loc.lng) {
-            try {
-                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=' + loc.lat + '&longitude=' + loc.lng + '&current=temperature_2m,weather_code&timezone=auto' );
-                const data = await res.json();
-                const temp = data.current.temperature_2m;
-                const code = data.current.weather_code;
-                const weatherInfo = getWeatherDescription(code);
-                
-                document.getElementById('live-weather-' + idx).innerHTML = '<div class="weather-temp">' + temp + '°C</div><div class="weather-desc">' + weatherInfo.icon + ' ' + weatherInfo.text + '</div>';
-            } catch (e) {
-                document.getElementById('live-weather-' + idx).innerHTML = '<span style="color:#999;">無法取得即時天氣</span>';
-            }
-        }
-    });
-}
-
-function getWeatherDescription(code) {
-    if (code === 0) return { icon: '☀️', text: '晴天' };
-    if (code === 1 || code === 2 || code === 3) return { icon: '⛅', text: '多雲' };
-    if (code === 45 || code === 48) return { icon: '🌫️', text: '霧' };
-    if (code >= 51 && code <= 55) return { icon: '🌧️', text: '毛毛雨' };
-    if (code >= 61 && code <= 65) return { icon: '🌧️', text: '雨' };
-    if (code >= 71 && code <= 77) return { icon: '🌨️', text: '雪' };
-    if (code >= 95 && code <= 99) return { icon: '⛈️', text: '雷雨' };
-    return { icon: '☁️', text: '未知' };
 }
