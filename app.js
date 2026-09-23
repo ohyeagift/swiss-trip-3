@@ -211,9 +211,9 @@ async function loadDay(index) {
 
     timelineContainer.innerHTML += `
         <div class="notes-section">
-            <div class="notes-header">📝 當天備註 / 準備事項</div>
+            <div class="notes-header">📝 當天備註</div>
             <div class="note-input-group">
-                <input type="text" id="new-note-input" placeholder="添加一項準備事項...">
+                <input type="text" id="new-note-input" placeholder="添加一項備註">
                 <button onclick="addNote(${index})">添加</button>
             </div>
             <div class="note-list">
