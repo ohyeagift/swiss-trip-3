@@ -716,8 +716,6 @@ function saveExpenseSummary() {
 }
 
 // ================= 滑動聯動地圖功能 =================
-let scrollObserver = null;
-
 function setupScrollTracking() {
     if (scrollObserver) scrollObserver.disconnect();
     const container = document.getElementById('timeline-container');
