@@ -394,3 +394,43 @@ input:checked + .slider:before { transform: translateX(22px); }
         height: 25vh; 
         max-height: 300px; 
     }
+
+/* ================= 備註/待辦事項樣式 ================= */
+.notes-section {
+    margin-top: 20px;
+    background: white;
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.notes-header {
+    font-size: 16px; font-weight: bold; color: var(--swiss-red); margin-bottom: 15px;
+}
+.note-input-group {
+    display: flex; gap: 10px; margin-bottom: 15px;
+}
+.note-input-group input {
+    flex-grow: 1; padding: 12px 15px; border: 1px solid #DDD; border-radius: 8px; font-size: 14px;
+}
+.note-input-group button {
+    background: #1A2B3C; color: white; border: none; padding: 0 20px; border-radius: 8px; font-weight: bold; cursor: pointer; white-space: nowrap;
+}
+.note-list {
+    display: flex; flex-direction: column;
+}
+.note-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 0; border-bottom: 1px solid #EEE;
+}
+.note-item:last-child { border-bottom: none; padding-bottom: 0; }
+.note-content {
+    display: flex; align-items: center; gap: 12px; flex-grow: 1;
+}
+.note-content input[type="checkbox"] {
+    width: 20px; height: 20px; cursor: pointer; accent-color: #1A2B3C;
+}
+.note-text { font-size: 15px; color: #333; line-height: 1.4; }
+.note-text.checked { text-decoration: line-through; color: #999; }
+.note-delete {
+    color: #D32F2F; background: none; border: none; font-size: 13px; cursor: pointer; padding: 5px 0 5px 15px; opacity: 0.7;
+}
