@@ -322,8 +322,7 @@ function loadNotesSummary() {
         }
     });
 
-    timelineContainer.innerHTML = hasAnyNotes ? html : '<div style="padding: 20px; text-align: center; color: #666;">目前沒有任何備註事項。  
-請在每日行程下方添加。</div>';
+    timelineContainer.innerHTML = hasAnyNotes ? html : '<div style="padding: 20px; text-align: center; color: #666;">目前沒有任何備註事項。<br>請在每日行程下方添加。</div>';
 }
 
 // 7. 更新地圖標記
