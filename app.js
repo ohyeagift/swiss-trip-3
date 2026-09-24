@@ -317,7 +317,7 @@ function loadNotesSummary() {
 
             html += `
                 <div class="notes-section" style="margin-bottom: 20px; margin-top: 0;">
-                    <div class="notes-header">${day.day_id} · ${day.date}</div>
+                    <div class="notes-header">${day.day_id} · ${day.date} | ${day.route_title}</div>
                     <div class="note-list">${notesHtml}</div>
                 </div>
             `;
