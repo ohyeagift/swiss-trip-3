@@ -413,49 +413,30 @@ input:checked + .slider:before { transform: translateX(22px); }
     font-size: 16px; font-weight: bold; color: var(--swiss-red); margin-bottom: 15px;
 }
 .note-input-group {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 15px;
+    display: flex; gap: 10px; margin-bottom: 15px;
 }
-.note-input-group input {
-    flex-grow: 1;
-    padding: 12px 15px;
-    border: 1px solid #DDD;
-    border-radius: 8px;
-    font-size: 14px;
-    outline: none;
-    width: 100%; /* 確保在手機上能撐開 */
+.note-input-group textarea {
+    flex-grow: 1; padding: 12px 15px; border: 1px solid #DDD; border-radius: 8px;
+    font-size: 14px; outline: none; width: 100%; resize: vertical; font-family: inherit;
 }
-.note-input-group input:focus {
-    border-color: var(--swiss-red);
-}
+.note-input-group textarea:focus { border-color: var(--swiss-red); }
 .note-input-group button {
-    background: #1A2530; /* 深藍黑色，符合您截圖的質感 */
-    color: white;
-    border: none;
-    padding: 0 20px;
-    border-radius: 8px;
-    font-weight: bold;
-    cursor: pointer;
-    white-space: nowrap; /* 防止按鈕文字換行或被擠壓 */
-    flex-shrink: 0; /* 防止按鈕被輸入框擠壓變形 */
+    background: #1A2530; color: white; border: none; padding: 0 20px; border-radius: 8px;
+    font-weight: bold; cursor: pointer; white-space: nowrap; flex-shrink: 0;
 }
-.note-list {
-    display: flex; flex-direction: column;
-}
+.note-list { display: flex; flex-direction: column; }
 .note-item {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 12px 0; border-bottom: 1px solid #EEE;
+    display: flex; align-items: flex-start; justify-content: space-between;
+    padding: 12px 0; border-bottom: 1px solid #EEE; gap: 10px;
 }
 .note-item:last-child { border-bottom: none; padding-bottom: 0; }
-.note-content {
-    display: flex; align-items: center; gap: 12px; flex-grow: 1;
-}
-.note-content input[type="checkbox"] {
-    width: 20px; height: 20px; cursor: pointer; accent-color: #1A2B3C;
-}
-.note-text { font-size: 15px; color: #333; line-height: 1.4; }
+.note-content { display: flex; align-items: flex-start; gap: 12px; flex-grow: 1; }
+.note-content input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; accent-color: #1A2B3C; margin-top: 2px; }
+.note-text { font-size: 15px; color: #333; line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
 .note-text.checked { text-decoration: line-through; color: #999; }
-.note-delete {
-    color: #D32F2F; background: none; border: none; font-size: 13px; cursor: pointer; padding: 5px 0 5px 15px; opacity: 0.7;
+.note-actions { display: flex; gap: 5px; flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end; max-width: 140px; }
+.note-actions button {
+    background: #F0F0F0; border: none; padding: 6px 10px; border-radius: 6px; font-size: 12px; cursor: pointer; color: #555; font-weight: bold;
 }
+.note-actions button.note-delete { background: #FFEBEE; color: #D32F2F; }
+
