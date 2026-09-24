@@ -152,6 +152,7 @@ async function loadDay(index) {
     const timelineContainer = document.getElementById('timeline-container');
     timelineContainer.innerHTML = '';
 
+    // --- 1. 住宿卡片區塊 ---
     if (dayData.accommodation && currentData.accommodations[dayData.accommodation] && !dayData.hide_acc_card) {
         const acc = currentData.accommodations[dayData.accommodation];
         let accLinksHtml = '';
@@ -159,11 +160,11 @@ async function loadDay(index) {
             const accSearchQuery = encodeURIComponent(acc.query);
             accLinksHtml += `<a href="https://www.google.com/maps/search/?api=1&query=${accSearchQuery}" target="_blank" class="link-btn">📍 地圖</a>`;
         }
-        if (acc.website ) accLinksHtml += `<a href="${acc.website}" target="_blank" class="link-btn">🌐 官網</a>`;
+        if (acc.website  ) accLinksHtml += `<a href="${acc.website}" target="_blank" class="link-btn">🌐 官網</a>`;
         if (acc.other) accLinksHtml += `<a href="${acc.other}" target="_blank" class="link-btn">🔗 其他</a>`;
 
         timelineContainer.innerHTML += `
-            <div class="timeline-item scroll-track" data-index="${i}" data-lat="${act.lat || ''}" data-lng="${act.lng || ''}">
+            <div class="accommodation-card scroll-track" data-lat="${acc.lat || ''}" data-lng="${acc.lng || ''}">
                 <div class="acc-left">
                     <div class="acc-icon">🏠</div>
                     <div>
@@ -176,13 +177,14 @@ async function loadDay(index) {
         `;
     }
 
+    // --- 2. 每日行程區塊 ---
     dayData.activities.forEach((act, i) => {
         let linksHtml = '';
         if (act.query && act.query.trim() !== '') {
             const searchQuery = encodeURIComponent(act.query);
             linksHtml += `<a href="https://www.google.com/maps/search/?api=1&query=${searchQuery}" target="_blank" class="link-btn">📍 地圖</a>`;
         }
-        if (act.links ) {
+        if (act.links  ) {
             if (act.links.website) linksHtml += `<a href="${act.links.website}" target="_blank" class="link-btn">🌐 官網</a>`;
             if (act.links.transit_map) linksHtml += `<a href="${act.links.transit_map}" target="_blank" class="link-btn">🗺️ 交通圖</a>`;
             if (act.links.sbb) linksHtml += `<a href="${act.links.sbb}" target="_blank" class="link-btn">🚆 SBB</a>`;
@@ -194,12 +196,13 @@ async function loadDay(index) {
 
         let altitudeHtml = '';
         if (act.altitude) {
-            const formattedText = act.altitude.replace(/\n/g, '<br>');
+            const formattedText = act.altitude.replace(/\n/g, '  
+');
             altitudeHtml = `<div class="altitude">${formattedText}</div>`;
         }
 
         timelineContainer.innerHTML += `
-            <div class="timeline-item scroll-track" data-lat="${act.lat || ''}" data-lng="${act.lng || ''}" data-idx="${i}">
+            <div class="timeline-item scroll-track" data-index="${i}" data-lat="${act.lat || ''}" data-lng="${act.lng || ''}">
                 <div class="time">${act.time}</div>
                 <div class="marker-icon">${i + 1}</div>
                 <div class="content">
@@ -211,6 +214,7 @@ async function loadDay(index) {
         `;
     });
 
+    // --- 3. 當天備註區塊 ---
     let notesHtml = '';
     const notes = dayData.notes || [];
     notes.forEach((note, nIdx) => {
