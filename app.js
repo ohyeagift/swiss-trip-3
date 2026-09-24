@@ -11,6 +11,8 @@ let isAuthenticated = false;
 let isViewAuthenticated = false;
 let editingExpCatIndex = null;
 let editingExpItemIndex = null;
+let editingNoteDayIdx = null;
+let editingNoteIdx = null;
 let scrollObserver = null;
 
 // 1. 初始化
@@ -202,18 +204,23 @@ async function loadDay(index) {
             <div class="note-item">
                 <div class="note-content">
                     <input type="checkbox" ${note.checked ? 'checked' : ''} onchange="toggleNote(${index}, ${nIdx})">
-                    <span class="note-text ${note.checked ? 'checked' : ''}">${note.text}</span>
+                    <span class="note-text ${note.checked ? 'checked' : ''}">${note.text.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</span>
                 </div>
-                <button class="note-delete" onclick="deleteNote(${index}, ${nIdx})">刪除</button>
+                <div class="note-actions">
+                    <button onclick="moveNote(${index}, ${nIdx}, -1)">↑</button>
+                    <button onclick="moveNote(${index}, ${nIdx}, 1)">↓</button>
+                    <button onclick="openNoteEditModal(${index}, ${nIdx})">編輯</button>
+                    <button class="note-delete" onclick="deleteNote(${index}, ${nIdx})">刪除</button>
+                </div>
             </div>
         `;
     });
 
     timelineContainer.innerHTML += `
         <div class="notes-section">
-            <div class="notes-header">📝 當天備註</div>
+            <div class="notes-header">📝 當天備註 / 準備事項</div>
             <div class="note-input-group">
-                <input type="text" id="new-note-input" placeholder="添加一項備註">
+                <textarea id="new-note-input" rows="2" placeholder="添加一項準備事項 (可按 Enter 換行)..."></textarea>
                 <button onclick="addNote(${index})">添加</button>
             </div>
             <div class="note-list">
@@ -223,36 +230,63 @@ async function loadDay(index) {
     `;
 
     updateMapMarkers(dayData);
-    setTimeout(setupScrollTracking, 800);
 }
 // ================= 備註功能邏輯 =================
 function addNote(dayIndex) {
     const input = document.getElementById('new-note-input');
     const text = input.value.trim();
     if (!text) return;
-    
-    if (!currentData.daily_itinerary[dayIndex].notes) {
-        currentData.daily_itinerary[dayIndex].notes = [];
-    }
+    if (!currentData.daily_itinerary[dayIndex].notes) currentData.daily_itinerary[dayIndex].notes = [];
     currentData.daily_itinerary[dayIndex].notes.push({ text: text, checked: false });
     saveCloudData();
 }
 
 function toggleNote(dayIndex, noteIndex) {
-    const note = currentData.daily_itinerary[dayIndex].notes[noteIndex];
-    note.checked = !note.checked;
+    currentData.daily_itinerary[dayIndex].notes[noteIndex].checked = !currentData.daily_itinerary[dayIndex].notes[noteIndex].checked;
     saveCloudData();
 }
 
 function deleteNote(dayIndex, noteIndex) {
-    currentData.daily_itinerary[dayIndex].notes.splice(noteIndex, 1);
+    if(confirm('確定要刪除這項備註嗎？')) {
+        currentData.daily_itinerary[dayIndex].notes.splice(noteIndex, 1);
+        saveCloudData();
+    }
+}
+
+function moveNote(dayIdx, noteIdx, dir) {
+    const notes = currentData.daily_itinerary[dayIdx].notes;
+    if (noteIdx + dir < 0 || noteIdx + dir >= notes.length) return;
+    const temp = notes[noteIdx];
+    notes[noteIdx] = notes[noteIdx + dir];
+    notes[noteIdx + dir] = temp;
     saveCloudData();
+}
+
+function openNoteEditModal(dayIdx, noteIdx) {
+    editingNoteDayIdx = dayIdx;
+    editingNoteIdx = noteIdx;
+    document.getElementById('edit-note-content').value = currentData.daily_itinerary[dayIdx].notes[noteIdx].text;
+    document.getElementById('note-form-modal').classList.add('active');
+}
+
+function closeNoteEditModal() {
+    document.getElementById('note-form-modal').classList.remove('active');
+}
+
+function saveEditedNote() {
+    if (editingNoteDayIdx === null || editingNoteIdx === null) return;
+    const text = document.getElementById('edit-note-content').value.trim();
+    if (text) {
+        currentData.daily_itinerary[editingNoteDayIdx].notes[editingNoteIdx].text = text;
+        saveCloudData();
+    }
+    closeNoteEditModal();
 }
 
 function loadNotesSummary() {
     currentDayIndex = 'notes';
     document.querySelector('.map-container').style.display = 'none';
-    document.getElementById('day-title').innerText = "備註總結";
+    document.getElementById('day-title').innerText = "備註與準備事項總結";
     
     const timelineContainer = document.getElementById('timeline-container');
     let html = '';
@@ -267,9 +301,14 @@ function loadNotesSummary() {
                     <div class="note-item">
                         <div class="note-content">
                             <input type="checkbox" ${note.checked ? 'checked' : ''} onchange="toggleNote(${dIdx}, ${nIdx})">
-                            <span class="note-text ${note.checked ? 'checked' : ''}">${note.text}</span>
+                            <span class="note-text ${note.checked ? 'checked' : ''}">${note.text.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</span>
                         </div>
-                        <button class="note-delete" onclick="deleteNote(${dIdx}, ${nIdx})">刪除</button>
+                        <div class="note-actions">
+                            <button onclick="moveNote(${dIdx}, ${nIdx}, -1)">↑</button>
+                            <button onclick="moveNote(${dIdx}, ${nIdx}, 1)">↓</button>
+                            <button onclick="openNoteEditModal(${dIdx}, ${nIdx})">編輯</button>
+                            <button class="note-delete" onclick="deleteNote(${dIdx}, ${nIdx})">刪除</button>
+                        </div>
                     </div>
                 `;
             });
@@ -277,18 +316,14 @@ function loadNotesSummary() {
             html += `
                 <div class="notes-section" style="margin-bottom: 20px; margin-top: 0;">
                     <div class="notes-header">${day.day_id} · ${day.date}</div>
-                    <div class="note-list">
-                        ${notesHtml}
-                    </div>
+                    <div class="note-list">${notesHtml}</div>
                 </div>
             `;
         }
     });
 
-    if (!hasAnyNotes) {
-        html = '<div style="padding: 20px; text-align: center; color: #666;">目前沒有任何備註事項。<br>請在每日行程下方添加。</div>';
-    }
-    timelineContainer.innerHTML = html;
+    timelineContainer.innerHTML = hasAnyNotes ? html : '<div style="padding: 20px; text-align: center; color: #666;">目前沒有任何備註事項。  
+請在每日行程下方添加。</div>';
 }
 
 // 7. 更新地圖標記
