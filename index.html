@@ -237,7 +237,28 @@
             </div>
         </div>
     </div>
-   
+    
+    <!-- 6. 編輯備註 Modal -->
+    <div id="note-form-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="close-btn" onclick="closeNoteEditModal()">✕</button>
+                <h3>編輯備註</h3>
+                <div style="width: 24px;"></div>
+            </div>
+            <div class="modal-body form-body">
+                <div class="form-group">
+                    <label>內容 (可按 Enter 換行)</label>
+                    <textarea id="edit-note-content" rows="4"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer double-btn">
+                <button class="btn-secondary" onclick="closeNoteEditModal()">取消</button>
+                <button class="btn-primary" onclick="saveEditedNote()">完成</button>
+            </div>
+        </div>
+    </div>
+    
     <script src="app.js"></script>
 </body>
 </html>
