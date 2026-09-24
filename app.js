@@ -62,23 +62,39 @@ async function renderApp() {
     loadDay(0);
 }
 
-// 4. 儲存資料到雲端
-async function saveCloudData() {
-    document.getElementById('day-title').innerText = "雲端同步中...";
-    try {
-        await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
-            body: JSON.stringify(currentData )
-        });
-        
-        if (currentDayIndex === 'expense') loadPreTripExpenses();
-        else if (currentDayIndex === 'weather') loadWeatherWebcam();
-        else if (currentDayIndex === 'notes') loadNotesSummary();
-        else loadDay(currentDayIndex);
-    } catch (error) {
-        alert("儲存失敗，請檢查網路連線！");
-    }
+// 4. 儲存資料到雲端 (背景非同步執行，秒速更新畫面)
+function saveCloudData() {
+    // 1. 先「秒速」更新目前的畫面，讓使用者不須等待
+    if (currentDayIndex === 'expense') loadPreTripExpenses();
+    else if (currentDayIndex === 'weather') loadWeatherWebcam();
+    else if (currentDayIndex === 'notes') loadNotesSummary();
+    else loadDay(currentDayIndex);
+
+    // 2. 標題稍微提示一下正在背景同步
+    const titleEl = document.getElementById('day-title');
+    const originalText = titleEl.innerText;
+    titleEl.innerText = originalText + " (☁️同步中...)";
+
+    // 3. 在背景偷偷把資料傳送給 JSONBin
+    fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
+        body: JSON.stringify(currentData )
+    })
+    .then(response => {
+        if (response.ok) {
+            // 同步成功，默默把提示拿掉
+            titleEl.innerText = originalText;
+        } else {
+            throw new Error("伺服器錯誤");
+        }
+    })
+    .catch(error => {
+        // 萬一真的沒網路，跳出提示，但畫面已經更新了(存在手機暫存)
+        console.error(error);
+        titleEl.innerText = originalText + " (⚠️同步失敗)";
+        // 可選：alert("背景同步失敗，請檢查網路。您的修改已暫存在本機。");
+    });
 }
 
 // 5. 渲染導航 Tabs
