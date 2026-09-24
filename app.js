@@ -288,7 +288,7 @@ function saveEditedNote() {
 function loadNotesSummary() {
     currentDayIndex = 'notes';
     document.querySelector('.map-container').style.display = 'none';
-    document.getElementById('day-title').innerText = "備註與準備事項總結";
+    document.getElementById('day-title').innerText = "備註總結";
     
     const timelineContainer = document.getElementById('timeline-container');
     let html = '';
