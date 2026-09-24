@@ -85,6 +85,7 @@ async function saveCloudData() {
 function renderTabs() {
     const tabsContainer = document.getElementById('tabs-container');
     tabsContainer.innerHTML = '';
+    
     currentData.daily_itinerary.forEach((day, index) => {
         const btn = document.createElement('button');
         btn.className = `tab-btn ${index === currentDayIndex && typeof currentDayIndex === 'number' ? 'active' : ''}`;
@@ -92,6 +93,10 @@ function renderTabs() {
         btn.onclick = () => {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
+            
+            // 👇 加入這行：切換天數時，讓時間軸自動回到最頂部
+            document.getElementById('timeline-container').scrollTop = 0; 
+            
             loadDay(index);
         };
         tabsContainer.appendChild(btn);
@@ -103,6 +108,10 @@ function renderTabs() {
     expenseBtn.onclick = () => {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         expenseBtn.classList.add('active');
+        
+        // 👇 加入這行：切換頁面時，讓時間軸自動回到最頂部
+        document.getElementById('timeline-container').scrollTop = 0; 
+        
         loadPreTripExpenses();
     };
     tabsContainer.appendChild(expenseBtn);
@@ -113,6 +122,10 @@ function renderTabs() {
     weatherBtn.onclick = () => {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         weatherBtn.classList.add('active');
+        
+        // 👇 加入這行：切換頁面時，讓時間軸自動回到最頂部
+        document.getElementById('timeline-container').scrollTop = 0; 
+        
         loadWeatherWebcam();
     };
     tabsContainer.appendChild(weatherBtn);
@@ -123,6 +136,10 @@ function renderTabs() {
     notesBtn.onclick = () => {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         notesBtn.classList.add('active');
+        
+        // 👇 加入這行：切換頁面時，讓時間軸自動回到最頂部
+        document.getElementById('timeline-container').scrollTop = 0; 
+        
         loadNotesSummary();
     };
     tabsContainer.appendChild(notesBtn);
