@@ -394,6 +394,7 @@ input:checked + .slider:before { transform: translateX(22px); }
         height: 25vh; 
         max-height: 300px; 
     }
+}
 
 /* ================= 備註/待辦事項樣式 ================= */
 .notes-section {
