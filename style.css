@@ -367,36 +367,37 @@ input:checked + .slider:before { transform: translateX(22px); }
 .weather-temp { font-size: 28px; font-weight: bold; color: #333; }
 .weather-desc { font-size: 15px; color: #666; display: flex; align-items: center; gap: 5px; }
 
-/* ================= 響應式設計 (電腦版改為置中手機框架) ================= */
+/* ================= 響應式設計 (平板與電腦版自動放大) ================= */
 @media (min-width: 768px) {
-    html {
-        background-color: #FCE4EC;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100%;
-        margin: 0;
-        padding: 0;
-    }
+    /* 頂部資訊 */
+    .trip-title { font-size: 26px; }
+    .trip-dates { font-size: 14px; }
+    .day-title { font-size: 20px; }
     
-    body {
-        width: 100%;
-        max-width: 420px; 
-        /* 為了配合放大，我們把基礎高度稍微調小，避免放大後超出螢幕 */
-        height: 75vh; 
-        border-radius: 24px; 
-        box-shadow: 0 10px 40px rgba(0,0,0,0.15); 
-        overflow: hidden; 
-        
-        /* 【關鍵設定：在這裡調整放大倍數！】 */
-        /* 1.5 代表放大 1.5 倍，您可以改成 2 或 3 試試看效果 */
-        transform: translateX(0) scale(1.3); 
-        transform-origin: center center; /* 確保是從正中心往外放大 */
-    }
-
+    /* 導航按鈕 */
+    .tab-btn { font-size: 16px; padding: 8px 20px; }
+    
+    /* 行程時間軸 */
+    .time { font-size: 16px; width: 100px; } /* 字變大，時間欄位也要稍微加寬 */
+    .activity-name { font-size: 20px; }
+    .altitude { font-size: 15px; }
+    .link-btn { font-size: 14px; padding: 6px 12px; }
+    
+    /* 住宿卡片 */
+    .acc-title { font-size: 14px; }
+    .acc-name { font-size: 18px; }
+    
+    /* 支出明細 */
+    .expense-category-title { font-size: 20px; }
+    .expense-name { font-size: 18px; }
+    .val-tag { font-size: 14px; padding: 6px 10px; }
+    .expense-total-row { font-size: 20px; }
+    .expense-total-row .highlight-yellow { font-size: 24px !important; }
+    
+/* 限制地圖在平板/電腦上的高度，保留更多空間給行程 */
     .map-container { 
-        height: 28vh; 
-        max-height: none; 
+        height: 25vh; 
+        max-height: 300px; 
     }
 }
 
