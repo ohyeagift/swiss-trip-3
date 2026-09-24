@@ -369,9 +369,8 @@ input:checked + .slider:before { transform: translateX(22px); }
 
 /* ================= 響應式設計 (電腦版改為置中手機框架) ================= */
 @media (min-width: 768px) {
-    /* 外層背景設定 (參考您截圖的淡粉紅色) */
     html {
-        background-color: #FCE4EC; /* 若想換背景色，可修改這個數值 */
+        background-color: #FCE4EC;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -380,20 +379,21 @@ input:checked + .slider:before { transform: translateX(22px); }
         padding: 0;
     }
     
-    /* 讓整個網頁變成一個手機大小的卡片 */
     body {
         width: 100%;
-        max-width: 420px; /* 模擬手機螢幕寬度 */
-        height: 92vh; /* 讓上下留一點空白，不要貼齊螢幕 */
-        border-radius: 24px; /* 加上圓角，看起來更像手機 */
-        box-shadow: 0 10px 40px rgba(0,0,0,0.15); /* 加上立體陰影 */
-        overflow: hidden; /* 確保內容不會超出圓角邊界 */
+        max-width: 420px; 
+        /* 為了配合放大，我們把基礎高度稍微調小，避免放大後超出螢幕 */
+        height: 75vh; 
+        border-radius: 24px; 
+        box-shadow: 0 10px 40px rgba(0,0,0,0.15); 
+        overflow: hidden; 
         
-        /* 【關鍵黑科技】這行可以確保所有彈出視窗(Modal)都被限制在這個手機框內，不會放到全螢幕 */
-        transform: translateX(0); 
+        /* 【關鍵設定：在這裡調整放大倍數！】 */
+        /* 1.5 代表放大 1.5 倍，您可以改成 2 或 3 試試看效果 */
+        transform: translateX(0) scale(1.3); 
+        transform-origin: center center; /* 確保是從正中心往外放大 */
     }
 
-    /* 微調地圖高度以符合新的框架比例 */
     .map-container { 
         height: 28vh; 
         max-height: none; 
