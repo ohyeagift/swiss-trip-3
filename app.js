@@ -230,7 +230,9 @@ async function loadDay(index) {
     `;
 
     updateMapMarkers(dayData);
+    setTimeout(setupScrollTracking, 800); // <--- 把這行喚醒地圖跟隨的魔法加回來！
 }
+
 // ================= 備註功能邏輯 =================
 function addNote(dayIndex) {
     const input = document.getElementById('new-note-input');
