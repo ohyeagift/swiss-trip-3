@@ -163,7 +163,7 @@ async function loadDay(index) {
         if (acc.other) accLinksHtml += `<a href="${acc.other}" target="_blank" class="link-btn">🔗 其他</a>`;
 
         timelineContainer.innerHTML += `
-            <div class="accommodation-card scroll-track" data-lat="${acc.lat || ''}" data-lng="${acc.lng || ''}">
+            <div class="timeline-item scroll-track" data-index="${i}" data-lat="${act.lat || ''}" data-lng="${act.lng || ''}">
                 <div class="acc-left">
                     <div class="acc-icon">🏠</div>
                     <div>
@@ -778,6 +778,20 @@ function setupScrollTracking() {
             if (entry.isIntersecting) {
                 const lat = parseFloat(entry.target.getAttribute('data-lat'));
                 const lng = parseFloat(entry.target.getAttribute('data-lng'));
+                const idx = parseInt(entry.target.getAttribute('data-index'));
+
+                // 1. 還原所有標記，並把當前行程的標記拉到最上層 + 變色
+                markers.forEach(m => {
+                    if (m.content) m.content.classList.remove('active-marker');
+                    m.zIndex = null;
+                    
+                    if (m.activityIndex === idx) {
+                        m.content.classList.add('active-marker');
+                        m.zIndex = 9999; // 讓它浮在最上面，徹底解決重疊問題！
+                    }
+                });
+
+                // 2. 移動地圖
                 if (!isNaN(lat) && !isNaN(lng) && map) {
                     map.panTo({ lat: lat, lng: lng });
                     map.setZoom(15);
