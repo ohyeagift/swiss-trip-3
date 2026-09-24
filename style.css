@@ -354,7 +354,12 @@ input:checked + .slider:before { transform: translateX(22px); }
 }
 .weather-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px; }
 .weather-title { font-size: 16px; font-weight: bold; color: var(--swiss-red); }
-.weather-actions { display: flex; gap: 8px; }
+.weather-actions { 
+    display: flex; 
+    gap: 8px; 
+    margin-left: auto; /* 強制把按鈕推向最右邊 */
+    justify-content: flex-end; 
+}
 .live-weather {
     background: #F5F7FA; border-radius: 8px; padding: 12px;
     display: flex; align-items: center; gap: 15px;
