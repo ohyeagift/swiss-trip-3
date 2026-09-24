@@ -252,7 +252,7 @@ function deleteNote(dayIndex, noteIndex) {
 function loadNotesSummary() {
     currentDayIndex = 'notes';
     document.querySelector('.map-container').style.display = 'none';
-    document.getElementById('day-title').innerText = "備註與準備事項總結";
+    document.getElementById('day-title').innerText = "備註總結";
     
     const timelineContainer = document.getElementById('timeline-container');
     let html = '';
@@ -355,7 +355,7 @@ function loadPreTripExpenses() {
                 else if (cat.title.includes('景點')) totalLabel = "CHF";
                 tags += `<span class="val-tag">${totalLabel}: ${item.total}</span>`;
             }
-            if (item.per_night) tags += `<span class="val-tag">每晚: ${item.per_night}</span>`;
+            if (item.per_night) tags += `<span class="val-tag">每人每晚: ${item.per_night}</span>`;
             if (item.per_person) tags += `<span class="val-tag highlight">每人: ${item.per_person}</span>`;
             
             itemsHtml += `<div class="expense-row"><div class="expense-name">${item.name}</div><div class="expense-vals">${tags}</div></div>`;
