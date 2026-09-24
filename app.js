@@ -196,8 +196,7 @@ async function loadDay(index) {
 
         let altitudeHtml = '';
         if (act.altitude) {
-            const formattedText = act.altitude.replace(/\n/g, '  
-');
+            const formattedText = act.altitude.replace(/\n/g, '<br>');
             altitudeHtml = `<div class="altitude">${formattedText}</div>`;
         }
 
@@ -236,9 +235,9 @@ async function loadDay(index) {
 
     timelineContainer.innerHTML += `
         <div class="notes-section">
-            <div class="notes-header">📝 當天備註 / 準備事項</div>
+            <div class="notes-header">📝 當天備註</div>
             <div class="note-input-group">
-                <textarea id="new-note-input" rows="2" placeholder="添加一項準備事項 (可按 Enter 換行)..."></textarea>
+                <textarea id="new-note-input" rows="2" placeholder="添加一項準備事項"></textarea>
                 <button onclick="addNote(${index})">添加</button>
             </div>
             <div class="note-list">
