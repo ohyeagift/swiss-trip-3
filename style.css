@@ -440,3 +440,12 @@ input:checked + .slider:before { transform: translateX(22px); }
 }
 .note-actions button.note-delete { background: #FFEBEE; color: #D32F2F; }
 
+/* ================= 地圖標記高亮 ================= */
+.custom-map-marker {
+    transition: all 0.3s ease;
+}
+.custom-map-marker.active-marker {
+    background-color: #FF9800; /* 醒目的橘色 */
+    transform: scale(1.4);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
