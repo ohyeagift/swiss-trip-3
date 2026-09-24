@@ -62,20 +62,17 @@ async function renderApp() {
     loadDay(0);
 }
 
-// 4. 儲存資料到雲端 (背景非同步執行，秒速更新畫面)
+// 4. 儲存資料到雲端 (背景非同步執行)
 function saveCloudData() {
-    // 1. 先「秒速」更新目前的畫面，讓使用者不須等待
     if (currentDayIndex === 'expense') loadPreTripExpenses();
     else if (currentDayIndex === 'weather') loadWeatherWebcam();
     else if (currentDayIndex === 'notes') loadNotesSummary();
     else loadDay(currentDayIndex);
 
-    // 2. 標題稍微提示一下正在背景同步
     const titleEl = document.getElementById('day-title');
     const originalText = titleEl.innerText;
     titleEl.innerText = originalText + " (☁️同步中...)";
 
-    // 3. 在背景偷偷把資料傳送給 JSONBin
     fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
@@ -83,17 +80,14 @@ function saveCloudData() {
     })
     .then(response => {
         if (response.ok) {
-            // 同步成功，默默把提示拿掉
             titleEl.innerText = originalText;
         } else {
             throw new Error("伺服器錯誤");
         }
     })
     .catch(error => {
-        // 萬一真的沒網路，跳出提示，但畫面已經更新了(存在手機暫存)
         console.error(error);
         titleEl.innerText = originalText + " (⚠️同步失敗)";
-        // 可選：alert("背景同步失敗，請檢查網路。您的修改已暫存在本機。");
     });
 }
 
@@ -109,10 +103,7 @@ function renderTabs() {
         btn.onclick = () => {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            
-            // 👇 加入這行：切換天數時，讓時間軸自動回到最頂部
             document.getElementById('timeline-container').scrollTop = 0; 
-            
             loadDay(index);
         };
         tabsContainer.appendChild(btn);
@@ -124,10 +115,7 @@ function renderTabs() {
     expenseBtn.onclick = () => {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         expenseBtn.classList.add('active');
-        
-        // 👇 加入這行：切換頁面時，讓時間軸自動回到最頂部
         document.getElementById('timeline-container').scrollTop = 0; 
-        
         loadPreTripExpenses();
     };
     tabsContainer.appendChild(expenseBtn);
@@ -138,10 +126,7 @@ function renderTabs() {
     weatherBtn.onclick = () => {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         weatherBtn.classList.add('active');
-        
-        // 👇 加入這行：切換頁面時，讓時間軸自動回到最頂部
         document.getElementById('timeline-container').scrollTop = 0; 
-        
         loadWeatherWebcam();
     };
     tabsContainer.appendChild(weatherBtn);
@@ -152,10 +137,7 @@ function renderTabs() {
     notesBtn.onclick = () => {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         notesBtn.classList.add('active');
-        
-        // 👇 加入這行：切換頁面時，讓時間軸自動回到最頂部
         document.getElementById('timeline-container').scrollTop = 0; 
-        
         loadNotesSummary();
     };
     tabsContainer.appendChild(notesBtn);
@@ -217,7 +199,7 @@ async function loadDay(index) {
         }
 
         timelineContainer.innerHTML += `
-            <div class="timeline-item scroll-track" data-lat="${act.lat || ''}" data-lng="${act.lng || ''}">
+            <div class="timeline-item scroll-track" data-lat="${act.lat || ''}" data-lng="${act.lng || ''}" data-idx="${i}">
                 <div class="time">${act.time}</div>
                 <div class="marker-icon">${i + 1}</div>
                 <div class="content">
@@ -229,7 +211,6 @@ async function loadDay(index) {
         `;
     });
 
-    // --- 載入當天備註區塊 ---
     let notesHtml = '';
     const notes = dayData.notes || [];
     notes.forEach((note, nIdx) => {
@@ -251,9 +232,9 @@ async function loadDay(index) {
 
     timelineContainer.innerHTML += `
         <div class="notes-section">
-            <div class="notes-header">📝 當天備註</div>
+            <div class="notes-header">📝 當天備註 / 準備事項</div>
             <div class="note-input-group">
-                <textarea id="new-note-input" rows="2" placeholder="添加一項準備事項"></textarea>
+                <textarea id="new-note-input" rows="2" placeholder="添加一項準備事項 (可按 Enter 換行)..."></textarea>
                 <button onclick="addNote(${index})">添加</button>
             </div>
             <div class="note-list">
@@ -263,7 +244,51 @@ async function loadDay(index) {
     `;
 
     updateMapMarkers(dayData);
-    setTimeout(setupScrollTracking, 800); // <--- 把這行喚醒地圖跟隨的魔法加回來！
+    setTimeout(setupScrollTracking, 800);
+}
+
+// 7. 更新地圖標記
+async function updateMapMarkers(dayData) {
+    const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+    markers.forEach(m => m.map = null);
+    markers = [];
+    const bounds = new google.maps.LatLngBounds();
+
+    dayData.activities.forEach((act, i) => {
+        if (act.lat && act.lng) {
+            const markerDiv = document.createElement('div');
+            markerDiv.className = 'custom-map-marker';
+            markerDiv.innerText = i + 1;
+            const marker = new AdvancedMarkerElement({
+                map: map, position: { lat: act.lat, lng: act.lng }, content: markerDiv, title: act.activity
+            });
+            marker.activityIndex = i; // 綁定索引，解決重疊問題
+            markers.push(marker);
+            bounds.extend({ lat: act.lat, lng: act.lng });
+        }
+    });
+
+    if (dayData.accommodation && currentData.accommodations[dayData.accommodation] && !dayData.hide_acc_card) {
+        const acc = currentData.accommodations[dayData.accommodation];
+        if (acc.lat && acc.lng) {
+            const accDiv = document.createElement('div');
+            accDiv.className = 'custom-map-marker hotel';
+            accDiv.innerText = '🏠';
+            const accMarker = new AdvancedMarkerElement({
+                map: map, position: { lat: acc.lat, lng: acc.lng }, content: accDiv, title: acc.name
+            });
+            markers.push(accMarker);
+            bounds.extend({ lat: acc.lat, lng: acc.lng });
+        }
+    }
+
+    if (!bounds.isEmpty()) {
+        map.fitBounds(bounds);
+        const listener = google.maps.event.addListener(map, "idle", function() { 
+            if (map.getZoom() > 14) map.setZoom(14); 
+            google.maps.event.removeListener(listener); 
+        });
+    }
 }
 
 // ================= 備註功能邏輯 =================
@@ -360,49 +385,6 @@ function loadNotesSummary() {
     timelineContainer.innerHTML = hasAnyNotes ? html : '<div style="padding: 20px; text-align: center; color: #666;">目前沒有任何備註事項。<br>請在每日行程下方添加。</div>';
 }
 
-// 7. 更新地圖標記
-async function updateMapMarkers(dayData) {
-    const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
-    markers.forEach(m => m.map = null);
-    markers = [];
-    const bounds = new google.maps.LatLngBounds();
-
-    dayData.activities.forEach((act, i) => {
-        if (act.lat && act.lng) {
-            const markerDiv = document.createElement('div');
-            markerDiv.className = 'custom-map-marker';
-            markerDiv.innerText = i + 1;
-            const marker = new AdvancedMarkerElement({
-                map: map, position: { lat: act.lat, lng: act.lng }, content: markerDiv, title: act.activity
-            });
-            markers.push(marker);
-            bounds.extend({ lat: act.lat, lng: act.lng });
-        }
-    });
-
-    if (dayData.accommodation && currentData.accommodations[dayData.accommodation] && !dayData.hide_acc_card) {
-        const acc = currentData.accommodations[dayData.accommodation];
-        if (acc.lat && acc.lng) {
-            const accDiv = document.createElement('div');
-            accDiv.className = 'custom-map-marker hotel';
-            accDiv.innerText = '🏠';
-            const accMarker = new AdvancedMarkerElement({
-                map: map, position: { lat: acc.lat, lng: acc.lng }, content: accDiv, title: acc.name
-            });
-            markers.push(accMarker);
-            bounds.extend({ lat: acc.lat, lng: acc.lng });
-        }
-    }
-
-    if (!bounds.isEmpty()) {
-        map.fitBounds(bounds);
-        const listener = google.maps.event.addListener(map, "idle", function() { 
-            if (map.getZoom() > 14) map.setZoom(14); 
-            google.maps.event.removeListener(listener); 
-        });
-    }
-}
-
 function loadPreTripExpenses() {
     currentDayIndex = 'expense';
     document.querySelector('.map-container').style.display = 'none';
@@ -473,7 +455,7 @@ function loadWeatherWebcam() {
     locations.forEach(async (loc, idx) => {
         if (loc.lat && loc.lng) {
             try {
-                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=' + loc.lat + '&longitude=' + loc.lng + '&current=temperature_2m,weather_code&timezone=auto' );
+                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=' + loc.lat + '&longitude=' + loc.lng + '&current=temperature_2m,weather_code&timezone=auto'  );
                 const data = await res.json();
                 const temp = data.current.temperature_2m;
                 const code = data.current.weather_code;
@@ -496,6 +478,7 @@ function getWeatherDescription(code) {
     if (code >= 95 && code <= 99) return { icon: '⛈️', text: '雷雨' };
     return { icon: '☁️', text: '未知' };
 }
+
 // ================= 編輯功能邏輯 =================
 function checkPasswordAndOpen() {
     if (isAuthenticated) { openListModal(); return; }
@@ -805,3 +788,4 @@ function setupScrollTracking() {
 
     document.querySelectorAll('.scroll-track').forEach(el => scrollObserver.observe(el));
 }
+
